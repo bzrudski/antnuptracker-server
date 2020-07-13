@@ -1,0 +1,67 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}AntNupTracker -- Download Data{% endblock %}
+{% block content %}
+    <h1>Download Flight Data</h1>
+    <div class="textbody">
+        <p>Click one of the buttons below to download the flight data in the format of your choice. 
+            Remember, all flight data is licensed under a 
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. Weather information from <a href="https://openweathermap.org/">OpenWeatherMap</a>, which is made available here under the <a href="https://opendatacommons.org/licenses/odbl/1-0/">Open Database License (ODbL)</a>.
+            You are encouraged to analyse this data. Just make sure to give credit to users who uploaded the data. Also, if you distribute any works directly
+            based on this data, you must distribute them under a similar license.
+        </p>
+            
+            <div class="buttoncontainer">
+            {% for format in formats %}
+                <a class="button" href="{% url 'downloadview' %}?format={{ format }}">
+                    {{format | upper}}
+                </a>
+            {% endfor %}
+                <a class="button" href="{% url 'nestedjson' %}">
+                    Nested JSON
+                </a>
+            </div>
+
+            <h2>File Structure</h2>
+            The downloaded file contains the fields listed below. <b>All times are in UTC</b>. The date and time fields should appear as actual dates and
+            times in the spreadsheet. If they show up as #########, expand the column to view the date.
+            <ul>
+                <li><b>flightID</b>: identification number for the flight, important for record keeping and for accessing the flight through the API</li>
+                <li><b>genus</b>: flight genus</li>
+                <li><b>species</b>: flight species</li>
+                <li><b>confidence_level</b>: reporting user's confidence in species identification</li>
+                <li><b>date_of_Flight</b>: date and time that the flight occurred</li>
+                <li><b>latitude</b>: latitude of flight</li>
+                <li><b>longitude</b>: longitude of flight</li>
+                <li><b>flight_size</b>: size of the flight observed (either single queen or many queens)</li>
+                <li><b>reported_by</b>: username of the user who reported the flight, <b>use this to give credit to the original user</b></li>
+                <li><b>user_professional</b>: indicates whether the reporting user is a professional</li>
+                <li><b>user_flagged</b>: indicates whether the reporting user account has been flagged and suspended</li>
+                <li><b>date_recorded</b>: date and time when the flight was recorded</li>
+                <li><b>image</b>: URL of the image, if the flight has an image</li>
+                <li><b>desc</b>: short weather description</li>
+                <li><b>longDesc</b>: long weather description</li>
+                <li><b>temperature</b>: temperature at approximately the time of flight (&deg;C)</li>
+                <li><b>pressure</b>: pressure at approximately the time of flight (hPa)</li>
+                <li><b>pressureSea</b>: pressure at sea level (hPa)</li>
+                <li><b>pressureGround</b>: pressure at ground level (hPa)</li>
+                <li><b>humidity</b>: humidity level (&percnt;)</li>
+                <li><b>tempMin</b>: minimum temperature (&deg;C)</li>
+                <li><b>tempMax</b>: maximum temperature (&deg;C)</li>
+                <li><b>clouds</b>: cloud cover (&percnt;)</li>
+                <li><b>sunrise</b>: time of sunrise</li>
+                <li><b>sunset</b>: time of sunset</li>
+                <li><b>rain1</b>: amount of rain in previous hour (mm)</li>
+                <li><b>rain3</b>: amount of rain in previous three hours (mm)</li>
+                <li><b>windSpeed</b>: speed of wind (m/s)</li>
+                <li><b>windDegree</b>: wind direction (&deg;)</li>
+                <li><b>time_weather_fetched</b>: time that the weather was loaded</li>
+                <li><b>author_<i>n</i></b>: username of the <i>n</i><sup>th</sup> comment</li>
+                <li><b>text_<i>n</i></b>: text of the <i>n</i><sup>th</sup> comment</li>
+                <li><b>time_<i>n</i></b>: time of the <i>n</i><sup>th</sup> comment</li>
+            </ul>
+            <h2>Weather Fields</h2>
+            The fields that constitute "Weather Information" are <b>desc, longDesc, temperature, pressure, pressureSea, pressureGround, humidity, tempMin, tempMax, clouds, sunrise, sunset, rain1, rain3, windSpeed, windDegree and time_weather_fetched</b>. The information in these fields was fetched from <a href="https://openweathermap.org/">OpenWeatherMap</a>. This data is licensed under the <a href="https://opendatacommons.org/licenses/odbl/1-0/">Open Database License (ODbL)</a>.
+        </div>
+    </div>
+ {% endblock content %}

@@ -1,0 +1,35 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}AntNupTracker Home{% endblock %}
+{% block content %}
+    <h1>Welcome to AntNupTracker</h1>
+    <h2>The citizen scientist's field tool for recording ant nuptial flights</h2>
+
+    <div class="cols">
+        <div class="col">
+
+            <b>Our project has two goals. First, we want to enable scientists to use the timing of <a href="{% url 'about' %}">ant nuptial flights</a> to monitor environmental changes on a global scale. 
+                Second, we want to help people collect ants in a less destructive and disruptive manner. </b>
+            <br><br>
+            To achieve these goals, we have developed <i>AntNupTracker</i>, a mobile app that allows reporting of ant nuptial flights from the field in order to build an <b>open and publicly-accessible</b> database of ant nuptial flight records.
+            This database can either be browsed in the app, <a href="{% url 'browse' %}">online</a> or <a href="{% url 'download' %}">downloaded</a> in the format of your choice. 
+            Whether you are a beginner or a professional myrmecologist, we invite you to share in our passion for ants and contribute to this citizen science project! 
+            <a href="{% url 'create-account' %}">Sign up</a> and download the app to begin!
+            <br><br>
+            Enjoy tracking those ants!
+            <br><br>
+            <i>The Abouheif Lab</i>
+        </div>
+        <div class="col">
+            <img id="flightpic" src="{% static 'nuptiallog/images/nuptialflight.jpg' %}">
+            <div class="buttoncontainer">
+                <a class="button" href="{% url 'create-account' %}">
+                    Sign up now!
+                </a>
+                <a class="button" href="{% url 'download' %}">
+                    Download the Data!
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

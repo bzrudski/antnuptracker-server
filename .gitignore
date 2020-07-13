@@ -1,0 +1,13 @@
+AntlabGit.code-workspace
+.env
+.vscode
+nuptialtracker/media/flight_pics/*.png
+*.pyc
+*.p8
+.DS_STORE
+nuptialtracker/static/nuptiallog/images/proprietary/*
+*.sqlite3
+nuptialtracker/static_files/nuptiallog
+*.tok
+TermsAndConditions.html
+PrivacyPolicy.html

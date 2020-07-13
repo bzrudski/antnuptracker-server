@@ -1,0 +1,70 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}Flight Records -- AntNupTracker{% endblock title%}
+{% block content %}
+<h1>Flight Records</h1>
+<div class=textbody>
+    Download our app to contribute new records to the database.
+</div>
+<div id="tablecontainer">
+    <div class="tableRowHeader">
+        <div class="idnumber">
+            <b>ID</b>
+        </div>
+        <div class="taxonomyinfo">
+            <b>Genus and Species</b>
+        </div>
+        <div class="dateofflight">
+            <b>Date of Flight</b>
+        </div>
+        <div class="location">
+            <b>Location of Flight</b>
+        </div>
+        <div class="reportedBy">
+            <b>Reported By</b>
+        </div>
+        <div class="validatedBox">
+            <b>Validated</b>
+        </div>
+    </div>
+    {% for flight in flights %}
+    <div class="tableRow">
+        <div class="idnumber"> {#<!--href="{% url 'browse_detail' flight.flightID %}">-->#}
+            {{ flight.flightID }}
+        </div>
+        <div class="taxonomyinfo">
+            <i>{{ flight.species }}</i>
+        </div>
+        <div class="dateofflight">
+            {{ flight.dateOfFlight }}
+        </div>
+        <div class="location">
+            {{ flight.get_location_string }}
+        </div>
+        <div class="reportedBy">
+            {{ flight.owner.username }}
+        </div>
+        <div class="validatedBox">
+            {% if flight.flightStatus == 1 %}
+                <img src="{% static 'nuptiallog/images/antgreen.svg' %}" class="validationImage">
+            {% elif flight.flightStatus == -1 %}
+                <img src="{% static 'nuptiallog/images/antred.svg' %}" class="validationImage">
+
+            {% else %}
+
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="nextprev">
+{% if show_prev %}
+    <a id="prev" class="nextprevbutton" href="{% url 'browse_params' start=prev_start offset=offset%}">Previous</a>
+{% endif %}
+
+{% if show_next %}
+    <a id="next" class="nextprevbutton" href="{% url 'browse_params' start=next_start offset=offset%}">Next</a>
+{% endif %}
+</div>
+{% endblock content %}

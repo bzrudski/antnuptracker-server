@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="{% static 'nuptiallog/styles/styles.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@523;800&family=Open+Sans&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="{% static 'nuptiallog/icons/favicon.png' %}">
+<head>
+    <title>{% block title%}Title -- AntNupTracker{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block scripts %}{% endblock scripts%}
+</head>
+<body>
+    {% block toolbar %}
+    {% if not mobile %}
+    <div id="toolbar">
+        <a id="home" href="{% url 'home' %}" class="menubutton" onclick="document.location.href=`{% url 'home' %}`">AntNupTracker</a>
+        <a id="about" href="{% url 'about' %}" class="menubutton" onclick="document.location.href=`{% url 'about' %}`">About</a>
+        <a id="browse" href="{% url 'browse' %}" class="menubutton" onclick="document.location.href=`{% url 'browse' %}`">Flight Records</a>
+        <a id="signup" href="{% url 'create-account' %}" class="menubutton" onclick="document.location.href=`{% url 'create-account' %}`">Sign Up</a>
+        <a id="reset" href="{% url 'reset-password' %}" class="menubutton" onclick="document.location.href=`{% url 'reset-password' %}`">Reset Password</a>
+        <a id="download" href="{% url 'download' %}" class="menubutton" onclick="document.location.href=`{% url 'download' %}`">Download Data</a>
+        <a id="help" href="{% url 'help' %}" class="menubutton" onclick="document.location.href=`{% url 'help' %}`">Help</a>
+    </div>
+    {% endif %}
+    {% endblock %}
+
+    {% block content %}
+
+    <h1>Page Title</h1>
+    
+    {% endblock %}
+
+    {% block footer %}
+    <div class="footer">
+        <div class="appiconholder">
+            <img id="appicon" src="{% static 'nuptiallog/images/appicon.png' %}" width="160">
+        </div>
+        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />All flight data is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br><br>
+        
+        <a href="https://apps.apple.com/us/app/id1493362260">
+            <img id="downloadAppStore" src="{% static 'nuptiallog/images/proprietary/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg' %}" alt="Download on App Store" height="45px">
+        </a>
+        <br>
+        For questions, feel free to contact us at <a href="mailto:nuptialtracker@gmail.com">nuptialtracker@gmail.com</a>.
+        <br>
+        Copyright Abouheif Lab, 2020
+        <br>
+        Developed by Benjamin Rudski
+        <br>
+        <div class="socialHolder">
+            <a class="socialButton" href="https://www.facebook.com/antnuptracker">
+                <img alt="Facebook Page" src="{% static 'nuptiallog/images/proprietary/f_logo_RGB-Black_58.png' %}" width="32px" title="Visit our Facebook Page">
+            </a>
+            <a class="socialButton" href="https://github.com/bzrudski/antnuptracker-client">
+                <img alt="App Repository" src="{% static 'nuptiallog/images/proprietary/GitHub-Mark-32px.png' %}" width="32px" title="App Repository on GitHub">
+            </a>
+            <a class="socialButton" href="https://github.com/bzrudski/antnuptracker-server">
+                <img alt="Server Repository" src="{% static 'nuptiallog/images/proprietary/GitHub-Mark-32px.png' %}" width="32px" title="Server Repository on GitHub">
+            </a>
+        </div>
+        <div class="policybuttoncontainer">
+            <a class="policybutton" href="{% url 'terms' %}">Terms and Conditions</a><a class="policybutton" href="{% url 'privacy' %}">Privacy Policy</a> <a class="policybutton" href="{% url 'community_standards' %}">Community Standards</a>
+        </div>
+        <br><br>
+        <div class="trademarks">
+            App Store is a trademark of Apple Inc., registered in the U.S. and other countries. Facebook is a trademark of Facebook, Inc. The GitHub logo is a trademark of GitHub, Inc.
+        </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

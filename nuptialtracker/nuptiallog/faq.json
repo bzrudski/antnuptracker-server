@@ -1,0 +1,38 @@
+[
+    {
+        "text"  : "What are ant nuptial flights? Why are you interested in studying them?",
+        "answer": "Ant nuptial flights are a key step in ant colony reproduction. A colony produces winged males and virgin queens. These winged reproductives leave the colony to mate with their counterparts from other colonies. This outcrossing promotes genetic diversity. We are interested in studying these flights for a number of reasons, discussed on our \"About\" page (see navigation bar)."
+    },
+    {
+        "text"  : "I just downloaded the app. How do I start reporting flight information?",
+        "answer" : "To record flight data, you must create an account. This can either be done from this website or from the app. In order to create an account, you must come up with a username, password and have an email address. Once you create an account, you will get a confirmation email with a link to activate your account. Once you activate your account, you can sign in on the app and begin reporting flight data."
+    },
+    {
+        "text" : "I'm in the process of creating an account, but I'm confused by what you mean by 'Professional'.",
+        "answer": "You qualify as a professional if you have a graduate degree in a field related to myrmecology or your employment is directly related to ants. For instance, if you have an undergraduate degree in biology, you may not qualify as a professional. However, if you have a masters' degree in biology and you have performed research in a lab that studies ants, you qualify as a professional."
+    },
+    {
+        "text" : "Why are the \"Comment\" and \"Edit\" buttons grayed out when I'm looking at flight data?",
+        "answer": "You can only comment on flights if you are logged into the app. If you are logged into the app, then the \"Comment\" button should be active. If it is not, please contact us and we will look into what is happening. In order to edit flights, you must be the user who reported the flight or a professional. If you are one of these and the \"Edit\" button is inactive, please let us know."
+    },
+    {
+        "text"  : "I'm entering flight data, but I've noticed that the \"Save\" button is inactive. Why can't I upload my flight data?",
+        "answer": "The \"Save\" button may be inactive for a number of reasons. In order to activate the \"Save\" button, you must have selected a genus and a species for the flight. If either of these is not selected, then you cannot save your flight. In addition, if you have indicated that you would like to upload an image, but you have not chosen an image to upload, you cannot press \"Save\"."
+    },
+    {
+        "text"  : "I'm new to studying ants. Can I still upload my flight information if I'm unsure about the species identification?",
+        "answer": "Absolutely! In fact, you're one of the users who we're trying to get interested in our app! When inputting your data, you have two options for indicating that you are unsure about your species identification. If you think that you know what species it is, select the species, but enter \"Low\" for \"Species Confidence\". If you really don't know the species, select \"sp. (Unknown)\" in the form. A professional myrmecologist can go back and validate the information you've uploaded. Also, if you're unsure, please try to take a picture of the flight! Pictures can help the experts validate your species identification."
+    },
+    {
+        "text"  : "My friend told me about a nuptial flight they saw and sent me a picture. Can I upload it?",
+        "answer": "Be careful! The picture is your friend's intellectual property, so you cannot upload it without permission. Also, you may not know the exact details of the flight. Instead, tell your friend about our app and let them contribute directly."
+    },
+    {
+        "text"  : "Why do I need to enter location coordinates?",
+        "answer": "Short answer: For location precision and accuracy. Long answer: Before we started this project, we did a preliminary study of online groups where flight data is reported. Often, only the city or the state was reported. However, big geographic regions can have many different regions with very different ecosystems. We want location information to be specific in order to be able to pinpoint specific factors that relate to ant nuptial flights. In order to accommodate a degree of uncertainty, you can input a radius of uncertainty."
+    },
+    {
+        "text"  : "Do you have a web-based version of your app?",
+        "answer": "Not yet. We've prioritised mobile devices so that you can report data from the field. Once we have developed the best app that we can, we'll develop a web-based version."
+    }
+]

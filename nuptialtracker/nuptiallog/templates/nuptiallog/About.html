@@ -1,0 +1,32 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}AntNupTracker -- About{% endblock title %}
+{% block content %}
+    <h1>About AntNupTracker</h1>
+    <div class="textbody">
+        <h2>About the Project</h2>
+        Ants are social insects that live in colonies. A queen spends her life laying eggs, most of which grow into workers. During a short period of the year, when it is
+        time to start new colonies, some eggs grow into virgin males and queens that are winged. These virgin males and queens participate in nuptial flights where they form
+        a mating ball in the air. Males from one colony mate with queens from other colonies. After mating, the males die. The newly-mated queens rip off their wings and search
+        for new homes to start their colonies.
+        <br><br>
+        Many studies have been conducted to examine the timing of these nuptial flights. These studies have shown links between pressure (<a href="https://doi.org/10.1111/j.1439-0418.1994.tb00768.x">Klimetzek and Faas, 1994</a>), precipitation (<a href="https://doi.org/10.1046/j.1365-2311.2001.00320.x">Kaspari, Pickering and Windsor, 2001</a>), humidity (<a href="https://doi.org/10.1007/s00040-015-0456-9">Nene et al., 2016</a>) and temperature (<a href="https://www.jstor.org/stable/25085460">Mull and Crist, 1993</a> for soil temperature; <a href="https://www.jstor.org/stable/4216453">Boomsma and Leusink, 1981</a> for temperature and light intensity) and the timing of ant nuptial flights on local scales. These studies have inspired us to build a global ant nuptial flight database to use the changes in timing of ant nuptial flights to detect environmental changes at a global scale. To do this, we combine your data with weather information collected automatically using the <a href="http://openweathermap.org">OpenWeather API</a>. Furthermore, we hope that this database will allow for collecting queen ants in a manner that is less disruptive to existing colonies and less destructive to the environment (discussed in <a href="http://www.documentation.ird.fr/hor/fdi:010043524">C&eacute;sar, 2004</a>, p. 74-75).
+        <br><br>
+        To encourage open science, all flight data uploaded to the database via our app is licensed with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. Anyone and everyone
+        can access, download and analyse this publicly-available data with only two conditions. The community works hard to report nuptial flight information. We owe it to our citizen scientists and professionals to give them credit for their efforts. When you use the data, you must reference the users who recorded it. Second, any work directly based on the flight data must be released under a similar license to the <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. This is done to ensure that the information collected through the app remains open and accessible forever.
+        <br><br>
+        Furthermore, we are releasing all our software as open source. In addition to being able to download and run our app, you can also contribute directly to its development. You can even make spinoffs for similar purposes, on the condition that any derivative work is also open source. You will also be able to access and modify the code for the server that builds the database. We therefore dedicate our project to you, the user. We are releasing the AntNupTracker App under the <a href="{% url 'applicense' %}">GNU General Public License with App Store Exception</a> and the AntNupTracker Server under the <a href="{% url 'serverlicense' %}">GNU Affero General Public License</a>. Therefore, not only will the data stay open forever, but so will the tools used to collect it.
+        <br><br>
+        Thank you for supporting our global project!
+        <br>
+        <h2>Attributions</h2>
+        The list of genera and species presented in the app (last updated summer of 2019) is copied from <a href="https://antwiki.org/wiki/Category:Extant_species">Category:Extant species</a> on <i>AntWiki</i> and can be downloaded <a href="{% url 'taxonomy' %}">here</a>. In keeping with the original licensing, this list is licensed under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+        <br><br>
+        Weather information is obtained from <a href="https://openweathermap.org/">OpenWeatherMap</a>, which is made available here under the <a href="https://opendatacommons.org/licenses/odbl/1-0/">Open Database License (ODbL)</a>.
+        <br><br>
+        Our website is typeset in <a href="https://fonts.google.com/specimen/Dosis">Dosis</a> by Impallari Type and <a href="https://fonts.google.com/specimen/Open+Sans">Open Sans</a> by Steve Matteson.
+        <h2>About Us</h2>
+        The AntNupTracker project is run out of the Abouheif Lab at McGill University in Montreal, Quebec, Canada. It has been developed by Benjamin Rudski, an undergraduate 
+        student at McGill University, under the supervision of Professor Ehab Abouheif.
+    </div>
+{% endblock content %}

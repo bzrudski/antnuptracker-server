@@ -1,0 +1,20 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}Sign Up -- AntNupTracker{% endblock %}
+{% block toolbar %}{% endblock toolbar %}
+{% block content %}
+    <h1>Create a AntNupTracker Account</h1>
+    <div class="textbody">
+    <p>Congratulations, {{ user.username }}! An e-mail was just sent to <a href="mailto:{{user.email}}">{{ user.email }}</a>. Click on the link to confirm your new <b>AntNupTracker</b> account.</p>
+    </div>
+{% endblock content %}
+{% block footer %}
+<div class="footer">
+    <div class="appdownload">
+            <img id="appicon" src="{% static 'nuptiallog/images/appicon.png' %}" width="160">
+    </div>
+    Copyright Abouheif Lab, 2020
+    <br>
+    Developed by Benjamin Rudski
+</div>
+{% endblock footer %}

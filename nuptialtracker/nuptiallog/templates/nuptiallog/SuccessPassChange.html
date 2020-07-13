@@ -1,0 +1,9 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{%block title%}Reset Password -- AntNupTracker{% endblock title%}
+{% block content %}
+    <h1>AntNupTracker Password Changed</h1>
+    <div class="textbody">
+        <p>Congratulations {{user.username}}! Your password has been changed. You may now log into <b>AntNupTracker</b>.</p>
+    </div>
+{% endblock content%}

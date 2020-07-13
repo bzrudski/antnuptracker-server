@@ -1,0 +1,10 @@
+body{
+    background-color: #003f00
+}
+.messagebody{
+    background-color: #88ff88;
+    width: 50%;
+    margin-left: 25%;
+    font-family: sans-serif;
+    line-height: 150%;
+}

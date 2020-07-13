@@ -1,0 +1,64 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}Sign Up -- AntNupTracker{% endblock title%}
+{% block scripts %}
+<script src="{% static 'rest_framework/js/jquery-3.4.1.min.js' %}"></script>
+<script>
+    /* Script based on https://stackoverflow.com/questions/32875751/display-form-field-based-on-other-fields-within-the-django-form,
+       answer by little_birdie and 
+    https://stackoverflow.com/questions/41785712/django-dynamic-change-form-fields, answer by InnokentyDM
+    */
+    function checkProfessionalFieldValue(){
+        if ($(this).val() == "myrmecologist"){
+            $('#institution').show();
+        } else {
+            $('#id_institution').val("");
+            $('#institution').hide();
+        }
+    }
+
+
+    $(document).ready(function() {
+        $('#id_professional').change(checkProfessionalFieldValue);
+
+        checkProfessionalFieldValue.call($('#id_professional').get(0))
+    });
+</script>
+{% endblock scripts %}
+{% block content %}
+<h1>Create a AntNupTracker Account</h1>
+<div id="formbody">
+<form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+
+        <div id="{{ field.name }}">
+            <b>{{ field.label_tag }}</b><br>
+            {{ field }}
+            {% if field.help_text %}
+            <div class="helptext" style="margin-left:0.5%;"><i>{{field.help_text}}</i></div>
+            {% endif %}
+            {% for error in field.errors %}
+                <p style="color:red"><b>{{ error }}</b></p>
+                {% endfor %}
+            <br><br>
+        </div>
+    {% endfor %}
+    
+        <div id="agree_field">
+            <b>Terms and Conditions:</b><br>
+            <input id="id_agree" type="checkbox" name="agree" required="" title="Terms and Conditions:">
+            
+            {% if not mobile %}
+            I have read and agree to the <a href="{% url 'terms' %}"><b>terms and conditions</b></a> of AntNupTracker.
+            {% else %}
+            I have read and agree to the <a href="{% url 'terms-mobile' %}"><b>terms and conditions</b></a> of AntNupTracker.
+            {% endif %}
+        </div>
+
+    <div id="buttondiv">
+        <button type="submit">Create account</button>
+    </div>
+</form>
+</div>
+{% endblock content %}

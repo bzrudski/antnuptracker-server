@@ -1,0 +1,17 @@
+body{
+    background-color: #004400;
+}
+h1 {
+    color: #ffffff;
+    text-align: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#formbody{
+    background-color: #55ff55;
+    border: 2px #000000 solid;
+    padding: 2%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: left;
+    margin: 2%;
+}

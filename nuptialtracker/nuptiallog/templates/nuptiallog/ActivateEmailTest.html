@@ -1,0 +1,12 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'nuptiallog/ActivateEmail.css' %}">
+<div class="messagebody">
+{% autoescape on %}
+Hello <span style="text-decoration-line: underline">{{ user.username }}</span>,<br>
+Thank you for your interest in <i><b>AntNupTracker</b></i>. Please click the link below to confirm your account and start helping us collect flight information:
+<br>
+http://{{domain}}
+<br>
+Welcome to the team!
+{% endautoescape %}
+</div>

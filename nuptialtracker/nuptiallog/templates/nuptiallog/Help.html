@@ -1,0 +1,19 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}Help -- AntNupTracker{% endblock %}
+
+{%block content%}
+    <h1>Help and Support</h1>
+    <div class="textbody">
+        <h3>Frequently Asked Questions</h3>
+        <div class="questionList">
+            {% for question in questions %}
+            <div class="question">
+                <p class="questionText"><b>{{ question.text }}</b></p>
+                <p class="answerText">{{ question.answer }}</p>
+                <br>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

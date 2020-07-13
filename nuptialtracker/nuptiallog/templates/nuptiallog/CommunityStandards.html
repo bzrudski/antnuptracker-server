@@ -1,0 +1,38 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %} Community Standards -- AntNupTracker {% endblock title %}    
+{% block content %}
+<h1>Community Standards</h1>
+<div class="textbody">
+    <h2>Accounts and Data Entry</h2>
+    You may access our flight data through the app or via download from our website with or without an account. If you create an account, you are responsible for keeping your password safe. Do not disclose your password to anybody. You may not attempt to gain access to any account which is not yours. If you violate these terms, your account may be removed.
+    <br><br>
+    If you create an account, you MAY NOT misrepresent your role. We will validate every account that is a professional myrmecologist. If we discover that you have incorrectly identified yourself as a professional, we will downgrade your account. We may also flag your flights and/or remove your account.
+    <br><br>
+    The quality of scientific research rests on the veracity of the data collected. Honest reporting of flight information is vital to the success of our research. If you report fraudulent data, your account may be suspended and your data flagged, or your account and data may be removed altogether.
+    <br><br>
+    You may not attempt to gain unauthorized access to our app or our site. If you do, your account will be suspended and/or terminated.
+    <br><br>
+    We are attempting to create a community. Therefore, community standards must be upheld. YOU MAY NOT UPLOAD ANY OBSCENE, PORNOGRAPHIC OR HATEFUL IMAGES OR COMMENTS. YOU MUST ALSO HOLD COPYRIGHT OVER THE IMAGES YOU UPLOAD. YOU MAY NOT VERBALLY HARASS, SEXUALLY OR OTHERWISE, ANY OTHER USER VIA THE COMMENTS FEATURE. If you do, your account will immediately be suspended and/or terminated. We have no tolerance for this level of behaviour. If you believe that someone has put up offensive content, IMMEDIATELY contact us at <a href="mailto:nuptialflights@gmail.com">nuptialflights@gmail.com</a>. Please include the username and the flight identification number in your email and detail the offensive content.
+    <br><br>
+    <h2>Intellectual Property</h2>
+    When submitting your flight data, you retain ownership of the data you upload through the app, while agreeing to release it to the community under a <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"><i>Creative Commons Attribution ShareAlike</i></a> license. This license enables the data to stay open and accessible to all of us forever. If you are not comfortable with sharing your flight records under these terms, do not participate. Once you have begun entering flights, removal of your data may not be possible due to the license terms.
+    <br><br>
+    <h2>Privacy Information</h2>
+    <i>For more information and for our legal agreement, see our <a href="{% url 'privacy' %}">privacy policy</a>.</i>
+    <br><br>
+    We collect some information about you when you use <b>AntNupTracker</b>.
+    <br><br>
+    We collect your email address when you create an account. We use this email address to validate your account and in case you forget your password. We may use this email address to contact you in the case of any of the infractions discussed above. Your email address remains private. We do not publish it in the app or on our website.
+    <br><br>
+    When creating an account you choose a username. We do not collect your legal name. We do not store your password in plaintext. If you are a professional, your institution or affiliation is made public. This is done to reinforce that you are a professional. The public description is optional. Please do not enter sensitive information in the public description. We are not responsible for any sensitive information you enter.
+    <br><br>
+    When you log into our app, we collect information about your device. We collect your device model and the name of your device operating system. This will serve as a security feature and to enable automatic login on your device. When you log in, you receive a device ID. Nobody, not even you, see this device ID. It serves to identify your device for security purposes. 
+    <br><br>
+    In our app, you may choose to receive notifications. Notifications are an <b>optional</b> feature. If you sign up for notifications, they are delivered via push notifications. We collect a device token to be able to identify your device.
+    <br><br>
+    In the app, you may also choose to enable location services in order to report flight data with more precision and accuracy. We store very specific coordinates. You can choose to disable location services. If you do, you are responsible for ensuring that you provide accurate location data for your flights.
+    <br><br>
+    In the app, you may also choose to upload images for your flights. These images are made publicly available. If you change an image on a flight, the old image is deleted from our server. Images are completely optional. YOU MAY NOT UPLOAD ANY OBSCENE, PORNOGRAPHIC OR HATEFUL IMAGES. If you do, your account will immediately be suspended and/or terminated. We have no tolerance for this level of behaviour. You may only upload images whose copyright you hold.
+</div>
+{% endblock content %}

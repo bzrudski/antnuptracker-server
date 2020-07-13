@@ -1,0 +1,20 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}Reset Password -- AntNupTracker {% endblock title %}
+{% block toolbar %}{% endblock toolbar %}
+{% block content %}
+    <h1>Reset AntNupTracker Account Password</h1>
+    <div class="textbody">
+        <p>An e-mail was just sent to <a href="mailto:{{user.email}}">{{ user.email }}</a>. Click on the link to reset your <b>AntNupTracker</b> password.</p>
+    </div>
+{% endblock content %}
+{% block footer %}
+<div class="footer">
+    <div class="appdownload">
+            <img id="appicon" src="{% static 'nuptiallog/images/appicon.png' %}" width="160">
+    </div>
+    Copyright Abouheif Lab, 2020
+    <br>
+    Developed by Benjamin Rudski
+</div>
+{% endblock footer %}
