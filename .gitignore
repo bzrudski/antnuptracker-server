@@ -1,7 +1,7 @@
 AntlabGit.code-workspace
 .env
 .vscode
-nuptialtracker/media/flight_pics/*.png
+nuptialtracker/media/flight_pics/*
 *.pyc
 *.p8
 .DS_STORE
