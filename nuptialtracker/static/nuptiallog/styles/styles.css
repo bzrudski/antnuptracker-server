@@ -5,11 +5,7 @@ html{
 }
 
 body{
-    /* background-image: linear-gradient(to left, #cdffcd, #bbffc0) ; */
-    /* background-image: linear-gradient(to top, #ffffff, #64ff85); */
     background-color: #bfedff;
-    /* background-attachment: fixed; */
-    /* background-repeat: no-repeat; */
     align-items: center;
     justify-content: center;
     height: 100%;
@@ -35,7 +31,6 @@ h3 {
 }
 
 p{
-    /* font-family: sans-serif; */
     text-align: center;
 }
 
@@ -43,18 +38,8 @@ a {
     color: #00007e;
 }
 
-/* button {
-    position: relative;
-    align-content: center;
-    justify-content: center;
-    justify-self: center;
-    align-self: center;
-} */
-
 .button{
     text-decoration: none;
-    /* font-family: sans-serif; */
-    /* background-color: #012901; */
     background-color: #000041;
     border-radius: 10px 30px 15px;
     color: #ffffff;
@@ -68,7 +53,6 @@ a {
 }
 
 .button:hover{
-    /* background-color: #005200; */
     background-color: #000072;
 }
 
@@ -85,17 +69,12 @@ a {
 .footer{
     position: relative;
     font-size: 12pt;
-    /* font-family: sans-serif; */
     text-align: center;
     top: 5%;
     bottom: 5%;
     margin-bottom: 5%;
     line-height: 125%;
 }
-
-/* .footer a{
-    color: #000055;
-} */
 
 .appiconholder a {
     width: 160px;
@@ -112,7 +91,6 @@ a.menubutton{
 }
 
 a.menubutton:hover{
-    /* background-color: #005200; */
     background-color: #000072;
 }
 
@@ -122,7 +100,6 @@ a.menubutton:hover{
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
-    /* font-family: sans-serif; */
     min-width: 10%;
     width: fit-content;
     margin-bottom: 0%;
@@ -136,13 +113,10 @@ a.menubutton:hover{
 
 
 .textbody{
-    /* background-color: #55ff55; */
-    /* font-family: sans-serif; */
     text-align: left;
     margin: 2%;
     padding: 2%;
     line-height: 200%;
-    /*border: 2px #000000 solid;*/
 }
 
 .textbody p {
@@ -150,7 +124,6 @@ a.menubutton:hover{
 }
 
 .policybody{
-    /* font-family: sans-serif; */
     text-align: left;
     margin: 2%;
     padding: 2%;
@@ -167,18 +140,10 @@ a.menubutton:hover{
 }
 
 .col{
-    /* background-color: #d5ffd5; */
-    /* font-family: sans-serif; */
-    /* border: #000000 1pt solid; */
     width: 45%;
     margin: 1%;
     line-height: 200%;
 }
-
-/* .col a{
-    color: #000055
-    color: #3434ff;
-} */
 
 a.button{
     color: #ffffff;
@@ -286,7 +251,6 @@ a.button{
 a.nextprevbutton {
     width: 15%;
     padding: 1%;
-    /* font-family: sans-serif; */
     text-align: center;
     color: #ffffff;
     background-color: #000041;
@@ -298,13 +262,6 @@ a.nextprevbutton {
 a.nextprevbutton:hover {
     background-color: #000072;
 }
-/* .leftcol{
-    float: left;
-}
-
-.rightcol{
-    float: right;
-} */
 
 .policybuttoncontainer {
     display: inline-flex;
@@ -335,31 +292,21 @@ a.nextprevbutton:hover {
 #toolbar{
     position: relative;
     color: white;
-    /*display: inline-flex;
-    flex-direction: row;*/
     width: 100%;
-    /* background-color: #012901; */
     background-color: #000041;
     justify-content: space-evenly;
     align-items: center;
     text-align: center;
     font-size: medium;
-    /*padding: 2% 0% 2% 0%;*/
 }
 
 #formbody{
     display: flex;
-    /* background-color: #caffca; */
-    /*border: 2px #000000 solid;*/
     padding: 2%;
-    /* font-family: sans-serif; */
     text-align: left;
     margin: 2%;
     font-size: large;
-    /* width: 50%; */
     justify-content: center;
-    /* align-items: center;
-    align-self: center; */
     left: 2%;
     right: 2%;
 }
@@ -378,9 +325,6 @@ a.nextprevbutton:hover {
     text-align: center;
 }
 
-/* #buttondiv button{
-    
-} */
 
 #flightpic{
     border-radius: 10px 80px 15px;
@@ -392,14 +336,8 @@ a.nextprevbutton:hover {
 }
 
 #appicon{
-    /* position: relative;
-    text-align: center; */
     border-radius: 20%;
     border: 2px #000000 solid;
-    /* display: block;
-    margin-left: auto;
-    margin-right: auto;
-    cursor: pointer; */
 }
 
 #antcartoon{
@@ -409,7 +347,6 @@ a.nextprevbutton:hover {
 }
 
 #tablecontainer{
-    /* font-family: sans-serif; */
     position: relative;
     width: 90%;
     left: 5%;
@@ -430,6 +367,23 @@ a.nextprevbutton:hover {
     display: inline-flex;
     order: 2;
     margin-right: auto;
+}
+
+#downloadAppStore {
+    margin: 12px;
+}
+
+#appStoreHolder {
+    display: inline-block;
+}
+
+#bigAppStoreDownload{
+    margin: 18px;
+}
+
+#appStoreContainer {
+    justify-content: center;
+    display: flex;
 }
 
 @media only screen and (max-width: 700px){
