@@ -1,5 +1,9 @@
 # antnuptracker-server
-Server backend for AntNupTracker. Visit us at https://www.antnuptialflights.com to learn more about our project. For the client app, see [this repository](https://github.com/bzrudski/antnuptracker-client). This application is a Django-based web app for recording, storing and accessing ant nuptial flight information. The web framework is written using Django, with a REST API added using Django REST Framework (to be documented...). Knox is used for authentication. This app should work on most major operating systems and should be compatible with the major database engines used by Django.
+Server backend for AntNupTracker. 
+
+Copyright (C) 2020 Abouheif Lab
+
+Visit us at https://www.antnuptialflights.com to learn more about our project. For the client app, see [this repository](https://github.com/bzrudski/antnuptracker-client). This application is a Django-based web app for recording, storing and accessing ant nuptial flight information. The web framework is written using Django, with a REST API added using Django REST Framework (to be documented...). Knox is used for authentication. This app should work on most major operating systems and should be compatible with the major database engines used by Django.
 
 ## Note on Licensing
 This server-side application is licensed under the GNU AGPLv3 (see `COPYING`). However, there are a few trademarked-dependencies that cannot be licensed in this form. These include social networking and app-distribution related image files. As a result, these files have been excluded from the repository. In cases where such an icon would be used, please ensure that there is adequate alt text or a comment indicating what proprietary icon must be put there.
