@@ -306,8 +306,9 @@ class FlightSerializerExport(serializers.ModelSerializer):
         weather = rep.pop('weather')
         comments = rep.pop('comments')
 
-        for key in weather:
-            rep[key] = weather[key]
+        if weather:
+            for key in weather:
+                rep[key] = weather[key]
 
         i = 0
 
