@@ -104,4 +104,4 @@ In order to set up a test server, the following must be performed:
 
 Now, your development server will work. Remember that if you want to test the mobile app with your modified server app, you must change the `baseURL` in the `URLManager.swift` file of the app's source code (see [this repository](https://github.com/bzrudski/antnuptracker-client)).
 
-IOS is a trademark or registered trademark of Cisco in the U.S. and other countries and is used under license. Apple and App Store are trademarks of Apple Inc., registered in the U.S. and other countries.
+IOS is a trademark or registered trademark of Cisco in the U.S. and other countries. Apple and App Store are trademarks of Apple Inc., registered in the U.S. and other countries.
