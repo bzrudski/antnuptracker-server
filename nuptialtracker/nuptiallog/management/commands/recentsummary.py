@@ -14,8 +14,8 @@ class Command(BaseCommand):
         yesterday = time() - timedelta(days=1)
         yesterday_flights = Flight.objects.filter(dateRecorded__gte=yesterday).count()
         user_count = User.objects.count()
-        professional_users = User.objects.filter(flightuser__professional=True)
-        professional_count = professional_users.count()
+        professional_count = User.objects.filter(flightuser__professional=True).count()
+        professional_users = User.objects.filter(flightuser__professional=True, date_joined__gte=yesterday)
 
         subject = "AntNupTracker Stats"
         message = render_to_string('nuptiallog/UsersSummaryEmail.html', {
