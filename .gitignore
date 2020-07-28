@@ -11,3 +11,4 @@ nuptialtracker/static_files/nuptiallog
 *.tok
 TermsAndConditions.html
 PrivacyPolicy.html
+env/
