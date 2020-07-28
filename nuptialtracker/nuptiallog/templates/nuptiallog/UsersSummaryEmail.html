@@ -13,7 +13,11 @@
         <br>
         {{ user.flightuser.institution }}<br>
         {{ user.date_joined }}
-        <br><br>
+        <br>
+        {% if user.flightuser.flagged %}
+        <b style="color: red;">FLAGGED</b><br>
+        {% endif %}
+        <br>
     </div>
     {% endfor %}
 </div>
