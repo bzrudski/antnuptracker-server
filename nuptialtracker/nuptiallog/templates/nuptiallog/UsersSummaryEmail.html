@@ -1,0 +1,25 @@
+{% load inlinecss %}
+{% inlinecss "nuptiallog/styles/styles.css" %}
+{% autoescape on %}
+<link rel="stylesheet" type="text/css" href="{% static 'nuptiallog/styles/styles.css' %}">
+
+<h1>AntNupTracker Statistics</h1>
+<div class="textbody">
+    <h2>Total Flights: {{ total_flights }}</h2>
+    <h2>Flights Yesterday: {{ yesterday_flights }} </h2>
+    <h2>Total Number of Users: {{ user_count }}</h2>
+    <h2>Total Professional Users: {{ professional_count }}</h2>
+    <h2>Recent Professional Users</h2>
+    {% for user in professional_users %}
+    <div>
+        <b>{{ user.username }}</b>
+        <br>
+        {{ user.flightuser.institution }}<br>
+        {{ user.date_joined }}
+        <br><br>
+    </div>
+    {% endfor %}
+</div>
+
+{% endautoescape %}
+{% endinlinecss %}
