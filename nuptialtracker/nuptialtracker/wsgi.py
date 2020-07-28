@@ -28,7 +28,7 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 
 import os
 from dotenv import load_dotenv
-projdir = os.path.expanduser("~/nuptialtrack-server/nuptialtracker")
+projdir = os.path.expanduser("~/antnuptracker-server/nuptialtracker")
 load_dotenv(os.path.join(projdir, ".env"))
 
 from django.core.wsgi import get_wsgi_application
