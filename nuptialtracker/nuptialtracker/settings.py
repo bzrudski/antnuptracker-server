@@ -112,7 +112,7 @@ REST_FRAMEWORK = {
 
 REST_KNOX = {
     'AUTO_REFRESH'  :   True,
-    'TOKEN_TTL '    :   timedelta(days=10),
+    'TOKEN_TTL'    :   timedelta(days=10),
 }
 
 # SECURITY_MIDDLEWARE = {
