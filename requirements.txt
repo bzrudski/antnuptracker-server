@@ -35,4 +35,3 @@ uritemplate==3.0.1
 urllib3==1.25.9
 Pillow==7.1.2
 openpyxl==3.0.3
-django-inlinecss==0.3.0
