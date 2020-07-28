@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'knox',
+    'django_inlinecss',
     'nuptiallog.apps.NuptiallogConfig',
     ]
 
