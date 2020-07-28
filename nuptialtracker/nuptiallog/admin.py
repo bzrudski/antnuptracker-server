@@ -85,7 +85,7 @@ class UserAdmin(BaseUserAdmin):
 
     def email_professional_user(self, request, queryset):
         for user in queryset:
-            if not user.flightuser.is_professional:
+            if not user.flightuser.professional:
                 continue
 
             to_addr = user.email
