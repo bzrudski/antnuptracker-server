@@ -73,7 +73,7 @@ class UserAdmin(BaseUserAdmin):
             return "Flagged"
 
     get_role.short_description = 'role'
-    list_display = ('username', 'email', 'flightuser__institution', 'is_active', 'get_role')
+    list_display = ('username', 'email', 'is_active', 'get_role')
     inlines = [FlightUserInline, FlightDeviceInline]
 
     def flag_user(self, request, queryset):
