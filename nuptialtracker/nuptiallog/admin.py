@@ -21,6 +21,8 @@ from django.contrib import admin
 from .models import Flight, Comment, Device, Changelog, FlightUser
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 
 from knox.models import AuthToken
 from knox.admin import AuthTokenAdmin as BaseAuthTokenAdmin
@@ -49,7 +51,7 @@ admin.site.register(Flight, FlightLogAdmin)
 
 class FlightUserInline(admin.TabularInline):
     model = FlightUser
-    #feilds = ['role']
+    exclude = ['genera', 'species']
 
 class FlightDeviceInline(admin.StackedInline):
     model = Device
@@ -81,7 +83,28 @@ class UserAdmin(BaseUserAdmin):
         for user in queryset:
             user.flightuser.unflag()
 
-    actions = [flag_user, unflag_user]
+    def email_professional_user(self, request, queryset):
+        for user in queryset:
+            if not user.flightuser.is_professional:
+                continue
+
+            to_addr = user.email
+            subject = "AntNupTracker Account Information"
+            message = render_to_string('nuptiallog/ProfessionalCheckEmail.html', {
+                'user'  : user.username,
+                'institution'   : user.flightuser.institution
+            })
+
+            email = EmailMessage(subject, message, to=[to_addr])
+            email.content_subtype = 'html'
+
+            try:
+                email.send()
+            except:
+                print("Error sending account email")
+
+    actions = [flag_user, unflag_user, email_professional_user]
+
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
