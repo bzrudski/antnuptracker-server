@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         total_flights = Flight.objects.count()
         yesterday = time() - timedelta(days=1)
-        yesterday_flights = Flight.objects.filter(dateRecorded_gte=yesterday).count()
+        yesterday_flights = Flight.objects.filter(dateRecorded__gte=yesterday).count()
         user_count = User.objects.count()
         professional_users = User.objects.filter(flightuser__professional=True)
         professional_count = professional_users.count()
