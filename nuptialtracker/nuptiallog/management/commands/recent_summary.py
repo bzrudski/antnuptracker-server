@@ -1,10 +1,10 @@
 from django.core.management.base import BaseCommand, CommandError
-from nuptialtracker.nuptiallog.models import Flight, FlightUser
+from nuptiallog.models import Flight, FlightUser
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.utils.timezone import now as time, timedelta
 from django.template.loader import render_to_string
-from nuptialtracker.nuptialtracker.settings import EMAIL_HOST_USER
+from nuptialtracker.settings import EMAIL_HOST_USER
 
 class Command(BaseCommand):
     help = 'Sends an email with statistics to the host email address'
