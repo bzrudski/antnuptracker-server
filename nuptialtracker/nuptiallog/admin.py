@@ -23,6 +23,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
 
 from knox.models import AuthToken
 from knox.admin import AuthTokenAdmin as BaseAuthTokenAdmin
@@ -84,6 +85,7 @@ class UserAdmin(BaseUserAdmin):
             user.flightuser.unflag()
 
     def email_professional_user(self, request, queryset):
+        site = get_current_site(request).domain
         for user in queryset:
             if not user.flightuser.professional:
                 continue
@@ -92,7 +94,8 @@ class UserAdmin(BaseUserAdmin):
             subject = "AntNupTracker Account Information"
             message = render_to_string('nuptiallog/ProfessionalCheckEmail.html', {
                 'user'  : user.username,
-                'institution'   : user.flightuser.institution
+                'institution'   : user.flightuser.institution,
+                'site'          : site
             })
 
             email = EmailMessage(subject, message, to=[to_addr])
