@@ -288,6 +288,28 @@ a.nextprevbutton:hover {
     margin: 8px;
 }
 
+.scientistsContainer {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: center;
+}
+
+.scientificAdvisorMember{
+    align-content: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    border: 2px black solid;
+    margin: 2%;
+    padding: 2%;
+}
+
+.scientistImage {
+    margin-left:auto;
+    margin-right:auto;
+}
+
 #toolbar{
     position: relative;
     color: white;

@@ -10,13 +10,15 @@
         a member of the Board, please contact us at <a href="mailto:nuptialtracker@gmail.com">nuptialtracker@gmail.com</a>.
 
         <h2>Members of the Scientific Advisory Board</h2>
+        <div class="scientistsContainer">
         {% for scientist in scientists %}
         <div class="scientificAdvisorMember">
-            <img class="scientistImage" src="{{ scientist.image.url }}">
+            <img class="scientistImage" width="250px" src="{{ scientist.image.url }}"><br>
             <b>{{ scientist.name }}</b><br>
             <i>{{ scientist.position }}</i><br>
             <a href="{{ scientist.url }}">Visit Website</a><br>
         </div>
         {% endfor %}
+        </div>
     </div>
 {% endblock content %}
