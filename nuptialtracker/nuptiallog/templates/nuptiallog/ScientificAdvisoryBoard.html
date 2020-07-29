@@ -13,7 +13,7 @@
         <div class="scientistsContainer">
         {% for scientist in scientists %}
         <div class="scientificAdvisorMember">
-            <img class="scientistImage" width="250px" src="{{ scientist.image.url }}"><br>
+            <img class="scientistImage" src="{{ scientist.image.url }}"><br>
             <h2>{{ scientist.name }}</h2>
             <i>{{ scientist.position }}</i><br>
             {% if scientist.url %}
