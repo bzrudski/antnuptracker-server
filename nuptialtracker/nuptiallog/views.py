@@ -24,7 +24,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from .models import Flight, Comment, Changelog, Weather, Role, Device, Genus, Species
+from .models import Flight, Comment, Changelog, Weather, Role, Device, Genus, Species, ScientificAdvisor
 from .serializers import FlightSerializer, CommentSerializer, FlightUserSerializer, FlightSerializerBarebones, ChangelogSerializer, WeatherSerializer, SpeciesSerializer, SpeciesListSerializer, GenusSerializer, GenusListSerializer, FlightSerializerFull, FlightSerializerExport
 from .permissions import IsOwnerOrReadOnly, IsOwner, IsProfessional
 from .weather import getWeatherForFlight
@@ -855,6 +855,11 @@ def terms(request, mobile=False):
 
 def privacy(request):
     return render(request, 'nuptiallog/PrivacyPolicy.html')
+
+def scientificAdvisoryBoard(request):
+    scientists = ScientificAdvisor.objects.all()
+
+    return render(request, 'nuptiallog/ScientificAdvisoryBoard.html', {"scientists": scientists})
 
 def helpView(request):
     questions = getFaqs()
