@@ -16,7 +16,9 @@
             <img class="scientistImage" width="250px" src="{{ scientist.image.url }}"><br>
             <h2>{{ scientist.name }}</h2>
             <i>{{ scientist.position }}</i><br>
+            {% if scientist.url %}
             <a href="{{ scientist.url }}">Visit Website</a><br>
+            {% endif %}
         </div>
         {% endfor %}
         </div>
