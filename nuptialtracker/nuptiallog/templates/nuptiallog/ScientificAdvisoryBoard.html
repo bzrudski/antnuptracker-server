@@ -14,7 +14,7 @@
         {% for scientist in scientists %}
         <div class="scientificAdvisorMember">
             <img class="scientistImage" width="250px" src="{{ scientist.image.url }}"><br>
-            <h4 style="font-size: larger;">{{ scientist.name }}</h4><br>
+            <h2 style="font-size: larger;">{{ scientist.name }}</h2>
             <i>{{ scientist.position }}</i><br>
             <a href="{{ scientist.url }}">Visit Website</a><br>
         </div>
