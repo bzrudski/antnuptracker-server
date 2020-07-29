@@ -310,6 +310,8 @@ a.nextprevbutton:hover {
     margin: 1%;
     padding: 1%;
     width: 250px;
+    background-color: #a7e0ff;
+    box-shadow: 3px 3px 4px 1px #002;
 }
 
 .scientistImage {
