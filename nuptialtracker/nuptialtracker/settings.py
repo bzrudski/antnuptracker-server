@@ -176,7 +176,7 @@ STATIC_URL = '/static/'
 # see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
 MEDIA_ROOT = u'<path to>/antnuptracker-server/nuptialtracker/media'
 MEDIA_URL = '/media/'
-STATIC_ROOT = u'<path to>/antnuptracker-server//nuptialtracker/static_files'
+STATIC_ROOT = u'<path to>/antnuptracker-server//nuptialtracker/static'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (

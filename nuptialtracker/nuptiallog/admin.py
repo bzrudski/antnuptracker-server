@@ -21,6 +21,9 @@ from django.contrib import admin
 from .models import Flight, Comment, Device, Changelog, FlightUser
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
 
 from knox.models import AuthToken
 from knox.admin import AuthTokenAdmin as BaseAuthTokenAdmin
@@ -33,14 +36,16 @@ class CommentInline(admin.StackedInline):
 
 class FlightLogAdmin(admin.ModelAdmin):
     fieldsets = [
-        ("Classification",      {'fields': ['genus', 'species']}),
-        ("Flight information",  {'fields': ['latitude','longitude','dateOfFlight']}),
-        ("Contact",             {'fields': ['owner']}),
+        ("Classification",      {'fields': ['genus', 'species', 'confidence']}),
+        ("Flight information",  {'fields': ['latitude','longitude', 'radius','dateOfFlight', 'size']}),
+        ("Contact",             {'fields': ['owner', 'dateRecorded']}),
+        ("Image",               {'fields': ['image']}),
+        ("Validation",          {'fields': ['validatedBy', 'validatedAt']})
     ]
     
     inlines = (CommentInline, )
     list_display=('flightID','genus','species','latitude','longitude','dateOfFlight')
-    list_filter = ['genus','species','latitude','longitude', 'dateOfFlight']
+    list_filter = ['dateOfFlight', 'dateRecorded']
     search_fields = ['latitude','longitude']
     #ordering = ['genus','species','location']
     ordering = ['flightID']
@@ -49,7 +54,7 @@ admin.site.register(Flight, FlightLogAdmin)
 
 class FlightUserInline(admin.TabularInline):
     model = FlightUser
-    #feilds = ['role']
+    exclude = ['genera', 'species']
 
 class FlightDeviceInline(admin.StackedInline):
     model = Device
@@ -69,8 +74,12 @@ class UserAdmin(BaseUserAdmin):
         else:
             return "Flagged"
 
+    def get_institution(self, obj):
+        return obj.flightuser.institution
+
     get_role.short_description = 'role'
-    list_display = ('username', 'email', 'is_active', 'get_role')
+    get_institution.short_description = 'institution'
+    list_display = ('username', 'email', 'get_institution', 'is_active', 'get_role')
     inlines = [FlightUserInline, FlightDeviceInline]
 
     def flag_user(self, request, queryset):
@@ -81,7 +90,30 @@ class UserAdmin(BaseUserAdmin):
         for user in queryset:
             user.flightuser.unflag()
 
-    actions = [flag_user, unflag_user]
+    def email_professional_user(self, request, queryset):
+        site = get_current_site(request).domain
+        for user in queryset:
+            if not user.flightuser.professional:
+                continue
+
+            to_addr = user.email
+            subject = "AntNupTracker Account Information"
+            message = render_to_string('nuptiallog/ProfessionalCheckEmail.html', {
+                'user'  : user.username,
+                'institution'   : user.flightuser.institution,
+                'site'          : site
+            })
+
+            email = EmailMessage(subject, message, to=[to_addr])
+            email.content_subtype = 'html'
+
+            try:
+                email.send()
+            except:
+                print("Error sending account email")
+
+    actions = [flag_user, unflag_user, email_professional_user]
+
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
