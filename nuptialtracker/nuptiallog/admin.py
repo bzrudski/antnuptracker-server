@@ -140,4 +140,9 @@ class AuthTokenAdmin(BaseAuthTokenAdmin):
 admin.site.unregister(AuthToken)
 admin.site.register(AuthToken, AuthTokenAdmin)
 
-admin.site.register(ScientificAdvisor)
+class ScientificAdvisorAdmin(admin.ModelAdmin):
+    model = ScientificAdvisor
+
+    list_display = ['name', 'position', 'url']
+
+admin.site.register(ScientificAdvisor, ScientificAdvisorAdmin)
