@@ -261,3 +261,9 @@ class Weather(models.Model):
     wind = models.OneToOneField('WindInfo', on_delete=models.CASCADE, blank=True, null=True)
 
     timeFetched = models.DateTimeField(default=timezone.now)
+
+class ScientificAdvisor(models.Model):
+    name = models.CharField(max_length=75)
+    position = models.CharField(max_length=125)
+    image = models.ImageField()
+    url = models.URLField()
