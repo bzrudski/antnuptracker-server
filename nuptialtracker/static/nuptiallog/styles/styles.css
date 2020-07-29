@@ -300,14 +300,14 @@ a.nextprevbutton:hover {
     flex-direction: column;
     justify-content: center;
     text-align: center;
-    border: 2px black solid;
+    border: 2px solid black;
     margin: 2%;
     padding: 2%;
 }
 
 .scientistImage {
-    margin-left:auto;
-    margin-right:auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #toolbar{
