@@ -24,7 +24,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from .models import Flight, Comment, Changelog, Weather, Role, Device, Genus, Species
+from .models import Flight, Comment, Changelog, Weather, Role, Device, Genus, Species, ScientificAdvisor
 from .serializers import FlightSerializer, CommentSerializer, FlightUserSerializer, FlightSerializerBarebones, ChangelogSerializer, WeatherSerializer, SpeciesSerializer, SpeciesListSerializer, GenusSerializer, GenusListSerializer, FlightSerializerFull, FlightSerializerExport
 from .permissions import IsOwnerOrReadOnly, IsOwner, IsProfessional
 from .weather import getWeatherForFlight
@@ -837,6 +837,21 @@ class FlightListNested(APIView):
     def get(self, request, *args, **kwargs):
         return Response(self.get_data(), status=status.HTTP_200_OK)
 
+class ScientistImageView(APIView):
+    def get(self, request, filename):
+        # print(filename)
+        path = str(MEDIA_ROOT) + "/scientist_pics/" + filename
+
+        if os.path.exists(path):
+            imageFile = open(path, 'rb')
+            image = imageFile.read()
+            imageFile.close()
+            return HttpResponse(image, content_type="image/png")
+        
+        else:
+            return Response("No such image", status=status.HTTP_404_NOT_FOUND)
+
+
 def welcome(request):
     return render(request, 'nuptiallog/Welcome.html')
 
@@ -855,6 +870,11 @@ def terms(request, mobile=False):
 
 def privacy(request):
     return render(request, 'nuptiallog/PrivacyPolicy.html')
+
+def scientificAdvisoryBoard(request):
+    scientists = ScientificAdvisor.objects.all()
+
+    return render(request, 'nuptiallog/ScientificAdvisoryBoard.html', {"scientists": scientists})
 
 def helpView(request):
     questions = getFaqs()
@@ -888,7 +908,7 @@ def taxonomy(request):
     return HttpResponse(licenseText, content_type="text/plain")
 
 def browse(request, start, offset):
-    allFlights = Flight.objects.order_by('-dateRecorded')
+    allFlights = Flight.objects.order_by('-flightID')
     
     end = start + offset
 

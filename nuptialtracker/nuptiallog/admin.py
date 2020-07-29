@@ -18,7 +18,7 @@
 # 
 
 from django.contrib import admin
-from .models import Flight, Comment, Device, Changelog, FlightUser
+from .models import Flight, Comment, Device, Changelog, FlightUser, ScientificAdvisor
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
@@ -139,3 +139,10 @@ class AuthTokenAdmin(BaseAuthTokenAdmin):
 
 admin.site.unregister(AuthToken)
 admin.site.register(AuthToken, AuthTokenAdmin)
+
+class ScientificAdvisorAdmin(admin.ModelAdmin):
+    model = ScientificAdvisor
+
+    list_display = ['name', 'position', 'url']
+
+admin.site.register(ScientificAdvisor, ScientificAdvisorAdmin)
