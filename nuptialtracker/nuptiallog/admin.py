@@ -36,15 +36,17 @@ class CommentInline(admin.StackedInline):
 
 class FlightLogAdmin(admin.ModelAdmin):
     fieldsets = [
-        ("Classification",      {'fields': ['genus', 'species']}),
-        ("Flight information",  {'fields': ['latitude','longitude','dateOfFlight']}),
-        ("Contact",             {'fields': ['owner']}),
+        ("Classification",      {'fields': ['genus', 'species', 'confidence']}),
+        ("Flight information",  {'fields': ['latitude','longitude', 'radius','dateOfFlight', 'size']}),
+        ("Contact",             {'fields': ['owner', 'dateRecorded']}),
+        ("Image",               {'fields': ['image']}),
+        ("Validation",          {'fields': ['validatedBy', 'validatedAt']})
     ]
     
     inlines = (CommentInline, )
     list_display=('flightID','genus','species','latitude','longitude','dateOfFlight')
-    list_filter = ['genus','species','latitude','longitude', 'dateOfFlight']
-    search_fields = ['latitude','longitude']
+    list_filter = ['dateOfFlight']
+    search_fields = ['latitude','longitude', 'genus', 'species']
     #ordering = ['genus','species','location']
     ordering = ['flightID']
 
