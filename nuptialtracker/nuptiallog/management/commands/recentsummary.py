@@ -23,7 +23,8 @@ class Command(BaseCommand):
             'yesterday_flights' : yesterday_flights,
             'user_count'    : user_count,
             'professional_count'    : professional_count,
-            'professional_users'    : professional_users
+            'professional_users'    : professional_users,
+            'date'  : yesterday
         })
 
         email = EmailMessage(subject, message, to=[EMAIL_HOST_USER])
