@@ -48,7 +48,7 @@ urlpatterns = [
     path('community-standards/', communityStandards, name="community_standards"),
     path('about/', about, name="about"),
     path('scientific-advisory-board/', scientificAdvisoryBoard, name="scientificAdvisoryBoard"),
-    path('scientist_pics/<str:filename>', ScientistImageView.as_view()),
+    path('media/scientist_pics/<str:filename>', ScientistImageView.as_view()),
     path('help/', helpView, name="help"),
     path('privacy-policy/', privacy, name="privacy"),
     path('terms-and-conditions/', terms, name="terms"),
