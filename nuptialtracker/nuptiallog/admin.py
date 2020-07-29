@@ -46,7 +46,7 @@ class FlightLogAdmin(admin.ModelAdmin):
     inlines = (CommentInline, )
     list_display=('flightID','genus','species','latitude','longitude','dateOfFlight')
     list_filter = ['dateOfFlight']
-    search_fields = ['latitude','longitude', 'genus', 'species']
+    search_fields = ['latitude','longitude', 'genus.name', 'species.name']
     #ordering = ['genus','species','location']
     ordering = ['flightID']
 
