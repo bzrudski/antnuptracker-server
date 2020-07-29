@@ -908,7 +908,7 @@ def taxonomy(request):
     return HttpResponse(licenseText, content_type="text/plain")
 
 def browse(request, start, offset):
-    allFlights = Flight.objects.order_by('-dateRecorded')
+    allFlights = Flight.objects.order_by('-flightID')
     
     end = start + offset
 
