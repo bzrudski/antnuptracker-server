@@ -20,7 +20,7 @@
 from django.urls import path, include
 from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
-from .views import FlightList, FlightDetail, GenusListView, SpeciesDetailView, ImageView, UserListView, CommentList, ChangelogForFlight, CreateUserForm, UserActivationView, ResetPasswordForm, ChangePasswordForm, WeatherForFlight, MyFlightsList, MySpeciesList, UpdateMySpeciesList, welcome, download, UserDetailView, communityStandards, about, helpView, ValidateFlight, FlightListNested, browse, terms, privacy, applicense, serverlicense, taxonomy, scientificAdvisoryBoard
+from .views import FlightList, FlightDetail, GenusListView, SpeciesDetailView, ImageView, UserListView, CommentList, ChangelogForFlight, CreateUserForm, UserActivationView, ResetPasswordForm, ChangePasswordForm, WeatherForFlight, MyFlightsList, MySpeciesList, UpdateMySpeciesList, welcome, download, UserDetailView, communityStandards, about, helpView, ValidateFlight, FlightListNested, browse, terms, privacy, applicense, serverlicense, taxonomy, scientificAdvisoryBoard, ScientistImageView
 from .pandasViews import FlightDataExport
 
 urlpatterns = [
@@ -48,6 +48,7 @@ urlpatterns = [
     path('community-standards/', communityStandards, name="community_standards"),
     path('about/', about, name="about"),
     path('scientific-advisory-board/', scientificAdvisoryBoard, name="scientificAdvisoryBoard"),
+    path('scientist_pics/<str:filename>', ScientistImageView.as_view()),
     path('help/', helpView, name="help"),
     path('privacy-policy/', privacy, name="privacy"),
     path('terms-and-conditions/', terms, name="terms"),

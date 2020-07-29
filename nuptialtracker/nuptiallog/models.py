@@ -265,5 +265,5 @@ class Weather(models.Model):
 class ScientificAdvisor(models.Model):
     name = models.CharField(max_length=75)
     position = models.CharField(max_length=125)
-    image = models.ImageField()
+    image = models.ImageField(upload_to="scientist_pics")
     url = models.URLField()

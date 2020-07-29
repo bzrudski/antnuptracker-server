@@ -837,6 +837,21 @@ class FlightListNested(APIView):
     def get(self, request, *args, **kwargs):
         return Response(self.get_data(), status=status.HTTP_200_OK)
 
+class ScientistImageView(APIView):
+    def get(self, request, filename):
+        # print(filename)
+        path = str(MEDIA_ROOT) + "/scientist_pics/" + filename
+
+        if os.path.exists(path):
+            imageFile = open(path, 'rb')
+            image = imageFile.read()
+            imageFile.close()
+            return HttpResponse(image, content_type="image/png")
+        
+        else:
+            return Response("No such image", status=status.HTTP_404_NOT_FOUND)
+
+
 def welcome(request):
     return render(request, 'nuptiallog/Welcome.html')
 
