@@ -100,7 +100,6 @@ a.menubutton:hover{
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
-    min-width: 10%;
     width: fit-content;
     margin-bottom: 0%;
     bottom: 0%;
