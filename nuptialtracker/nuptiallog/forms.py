@@ -30,7 +30,7 @@ class UserCreationForm(BaseUserForm):
         ("enthusiast", "Citizen Scientist")
     ]
 
-    professional = forms.ChoiceField(label="Role in the Ant Community", help_text="Enter your role in the ant community.", choices=ROLE_CHOICES)
+    professional = forms.ChoiceField(label="Role in the Ant Community", help_text="Enter your role in the ant community. <ul><li><b>Citizen Scientist:</b> Choose this option if you're really into ants, but you don't work with them professionally.</li><li><b>Professional Myrmecologist:</b> Choose this option if you have a degree in a field related to ants, or if your profession is directly related to ants.</li></ul>", choices=ROLE_CHOICES)
     institution = forms.CharField(label="Institution or Affiliation", max_length=80, required=False, help_text="Enter your institution or affiliation.")
     description = forms.CharField(label="Say a few words about yourself (optional)", required=False, help_text="This will be visible on your public profile.", widget=forms.Textarea)
 
