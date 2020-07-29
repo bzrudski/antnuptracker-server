@@ -302,9 +302,7 @@ a.nextprevbutton:hover {
 
 .scientificAdvisorMember {
     align-content: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: inline;
     text-align: center;
     border: 2px solid black;
     margin: 1%;
