@@ -6,9 +6,11 @@ nuptialtracker/media/flight_pics/*
 *.p8
 .DS_STORE
 nuptialtracker/static/nuptiallog/images/proprietary/*
+nuptialtracker/static_raw/
 *.sqlite3
 nuptialtracker/static_files/nuptiallog
 *.tok
 TermsAndConditions.html
 PrivacyPolicy.html
 env/
+nuptialtracker/media/scientist_pics/*
