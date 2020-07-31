@@ -14,11 +14,13 @@
         {% for scientist in scientists %}
         <div class="scientificAdvisorMember">
             <img class="scientistImage" src="{{ scientist.image.url }}"><br>
-            <h2>{{ scientist.name }}</h2>
-            <i>{{ scientist.position }}</i><br>
-            {% if scientist.url %}
-            <a href="{{ scientist.url }}">Visit Website</a><br>
-            {% endif %}
+            <div class="scientistDetails">
+                <h2>{{ scientist.name }}</h2>
+                <i>{{ scientist.position }}</i><br>
+                {% if scientist.url %}
+                <a href="{{ scientist.url }}">Visit Website</a><br>
+                {% endif %}
+            </div>
         </div>
         {% endfor %}
         </div>

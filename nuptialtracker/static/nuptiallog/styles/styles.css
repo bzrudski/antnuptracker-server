@@ -296,25 +296,67 @@ a.nextprevbutton:hover {
 
 .scientistsContainer {
     display: flex;
-    flex-flow: wrap;
+    position: relative;
+    /* left: 25%; */
+    /* right: 25%; */
+    width: 50%;
+    /* flex-flow: wrap; */
+    flex-direction: column;
     justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .scientificAdvisorMember {
-    align-content: center;
-    display: inline;
-    text-align: center;
-    border: 2px solid black;
-    margin: 1%;
+    /* align-content: left; */
+    /* display: inline; */
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+    /* border: 2px solid black; */
+    /* margin: 1%; */
     padding: 1%;
-    width: 250px;
-    background-color: #a7e0ff;
-    box-shadow: 3px 3px 4px 1px #002;
+    margin-bottom: 2%;
+    /* margin-right: auto; */
+    /* width: 50%; */
+    /* width: 250px; */
+    /* background-color: #a7e0ff; */
+    /* box-shadow: 3px 3px 4px 1px #002; */
+}
+
+.scientistDetails h2 {
+    text-align: left;
 }
 
 .scientistImage {
     width: 250px;
     height: 300px;
+    /* margin-left: auto; */
+    margin-right: 5%;
+}
+
+.helpImagesContainer {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: center;
+}
+
+.helpImageContainer {
+    align-content: center;
+    display: inline;
+    text-align: center;
+    /* border: 2px solid black; */
+    margin: 1%;
+    padding: 1%;
+    max-width: 50%;
+    min-width: 25%;
+    /* width: 250px; */
+    /* box-shadow: 3px 3px 4px 1px #002; */
+}
+
+.helpContainedImage {
+    max-width: 75%;
+    max-height: 300px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -436,4 +478,5 @@ a.nextprevbutton:hover {
         width: 90%;
         justify-content: center;
     }
+
 }
