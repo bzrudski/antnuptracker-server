@@ -31,10 +31,10 @@ In terms of naming conventions, there is a mix of `snake_case` and `camelCase` u
 
 The official name of this app is **AntNupTracker**. However, it was originally **NuptialLog** and then **NuptialTracker**. These names remain throughout the file hierarchy. Eventually, we may switch all references to **AntNupTracker**. If you want, do this in a pull request. Just make sure to fix **all** the imports.
 
-## Note on `static`, `static_files` and `media`
+## Note on `static`, `static_raw` and `media`
 * `media` is for user-uploaded flight images
-* `static` contains the static files for the project
-* `static_files` is the `STATIC_ROOT`
+* `static` contains the static files for the project. It is the `STATIC_ROOT` and `STATIC_URL`
+* `static_raw` is a member of `STATICFILES_DIRS`. Place static files there to copy them into `static` using `collectstatic`
 
 ## Note on `curl`
 A key feature of this server-side app is push notifications. To deliver push notifications to iOS devices, an `HTTP/2` connection must be established. This is beyond the capabilities of the `python-requests` module. Therefore, `pycurl` was initially used. However, the hosting environment for the production version of the site does not have `pycurl` installed with `nghttp2`, so a custom installation of `curl` was used. If you have `pycurl` installed in a way that allows you to make `HTTP/2` requests, feel free to uncomment the `pycurl`-related lines in `nuptialtracker/nuptiallog/notifications.py`. However, the official code will continue to rely on using `curl`.
@@ -80,7 +80,7 @@ In order to set up a test server, the following must be performed:
     The variables `KID`, `ISS`, `TOKFILE`, `APNS_TOPIC` and `KEYPATH` are required for `iOS` notifications. The variable `WEATHERKEY` is obtained from `OpenWeather`.
 
    Make sure to edit the web server settings to pass these environment variables to the web server. In Apache, add the above declarations to `/etc/apache2/envvars`. If you need to rename any of the environmental variables, make sure to change them in relevant source files. MAKE SURE NOT TO COMMIT THESE CHANGES.
-6. Edit `nuptialtracker/nuptialtracker/settings.py` to add your database and email settings. If your server does not have an `SSL` certificate, edit the security settings to prevent `HTTPS` redirect and to allow for insecure `CSRF` tokens. **You must configure your database before moving on to the next step.**
+6. Edit `nuptialtracker/nuptialtracker/settings.py` to add your database and email settings. If your server does not have an `SSL` certificate, edit the security settings to prevent `HTTPS` redirect and to allow for insecure `CSRF` tokens. Also, change the settings to allow insecure cookies. This is required to use the admin interface. **You must configure your database before moving on to the next steps.**
 7. Install the `requirements` (you may want to create a virtual environment).
    ```bash
    $ pip install -r requirements.txt
