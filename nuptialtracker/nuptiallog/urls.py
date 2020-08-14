@@ -48,6 +48,7 @@ urlpatterns = [
     path('api/flights/<int:pk>/history/', views.ChangelogForFlight.as_view()),
     path('api/flights/<int:pk>/weather/', views.WeatherForFlight.as_view()),
     path('api/flights/<int:pk>/validate/', views.ValidateFlight.as_view()),
+    path('api/flights/<int:pk>/validate-flight/', views.ValidateInvalidateFlight.as_view()),
     path('api/flights/download', FlightDataExport.as_view(), name='downloadview'),
     path('api/flights/download-json', views.FlightListNested.as_view(), name='nestedjson'),
     path('api/my-flights/', views.MyFlightsList.as_view()),

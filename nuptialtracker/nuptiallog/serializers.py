@@ -157,6 +157,13 @@ class GenusListSerializer(serializers.Serializer):
         # print(validatedGenera)
         return validatedGenera
 
+class FlightValidationSerializer(serializers.Serializer):
+    flightID = serializers.IntegerField()
+    validate = serializers.BooleanField(required=False)
+    validated = serializers.BooleanField(write_only=True, required=False)
+    validatedBy = serializers.CharField(write_only=True, required=False, allow_null=True)
+    validatedAt = serializers.DateTimeField(write_only=True, required=False, allow_null=True)
+
 class FlightUserSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source="user.username")
 

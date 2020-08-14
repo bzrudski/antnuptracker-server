@@ -25,8 +25,8 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from .models import Flight, Comment, Changelog, Weather, Role, Device, Genus, Species, ScientificAdvisor
-from .serializers import FlightSerializer, CommentSerializer, FlightUserSerializer, FlightSerializerBarebones, ChangelogSerializer, WeatherSerializer, SpeciesSerializer, SpeciesListSerializer, GenusSerializer, GenusListSerializer, FlightSerializerFull, FlightSerializerExport
-from .permissions import IsOwnerOrReadOnly, IsOwner, IsProfessional
+from .serializers import *
+from .permissions import IsOwnerOrReadOnly, IsOwner, IsProfessional, IsProfessionalOrReadOnly
 from .weather import getWeatherForFlight
 from .notifications import sendAllNotifications
 from .paginators import BiggerPagesPaginator
@@ -294,6 +294,100 @@ class ValidateFlight(APIView):
             return Response("Flight validated.", status=status.HTTP_200_OK)
         except Flight.DoesNotExist:
             return Response("No flight with that id.", status=status.HTTP_404_NOT_FOUND)
+
+class ValidateInvalidateFlight(APIView):
+    permission_classes = [IsProfessionalOrReadOnly]
+
+    def notify_user(self, request, flightID, validated):
+        f = Flight.objects.get(pk=flightID)
+        taxonomy = str(f.species)
+        u = f.owner
+        devices = u.devices.exclude(deviceToken=None).exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now())
+
+        if validated:
+            title = "Flight Validated"
+            body = f"Your {taxonomy} flight (id {flightID}) has been validated by {self.request.user.username}."
+        else:
+            title = "Flight Unvalidated"
+            body = f"Your {taxonomy} flight (id {flightID}) has been unvalidated by {self.request.user.username}."
+
+        sendAllNotifications(title, body, devices, flightID=flightID)
+
+    def get(self, request, pk):
+        flight = Flight.objects.get(pk=pk)
+
+        if flight.validatedBy:
+            username = flight.validatedBy.user.username
+        else:
+            username = None
+
+        data = {
+            "flightID"  : pk,
+            "validated" : flight.isValidated(),
+            "validatedBy":  username,
+            "validatedAt":  flight.validatedAt
+        }
+        serializer = FlightValidationSerializer(data=data)
+
+        if (serializer.is_valid()):
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, pk):
+        serializer = FlightValidationSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        flightID = serializer.validated_data["flightID"]
+
+        if flightID != pk:
+            return Response({"Errors": "Incorrect flight ID"}, status=status.HTTP_400_BAD_REQUEST)
+
+        flight = Flight.objects.get(pk=pk)
+
+        validate = serializer.validated_data["validate"]
+
+        if validate:
+            flight.validatedBy = request.user
+            timeOfValidation = timezone.now().replace(microsecond=0)
+            flight.validatedAt = timeOfValidation
+
+            flight.save()
+
+            Changelog.objects.create(user=request.user, flight=f, event=f"Flight validated by {request.user.username}.", date=timeOfValidation)
+
+        else:
+            flight.validatedBy = None
+            flight.validatedAt = None
+
+            flight.save()
+
+            Changelog.objects.create(user=request.user, flight=f, event=f"Flight unvalidated by {request.user.username}.", date=timezone.now().replace(microsecond=0))
+
+        notificationThread = Thread(target=self.notify_user, args=[request, pk, validate])
+        notificationThread.start()
+
+        if flight.isValidated():
+            username = flight.validatedBy.user.username
+        else:
+            username = None
+
+        data = {
+            "flightID"  : pk,
+            "validated" : flight.isValidated(),
+            "validatedBy":  username,
+            "validatedAt":  flight.validatedAt
+        }
+
+        responseSerializer = FlightValidationSerializer(data=data)
+
+        if (responseSerializer.is_valid()):
+            return Response(responseSerializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(responseSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class MyFlightsList(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = FlightSerializerBarebones
