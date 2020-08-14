@@ -51,10 +51,15 @@ class FlightSerializer(serializers.ModelSerializer):
     taxonomy = SpeciesSerializer(source='species')
     comments = CommentSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source="owner.username")
+    ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
+
+    # TO DEPRECATE THESE TWO FIELS... REPLACED BY `ownerRole`
     ownerProfessional = serializers.BooleanField(source="owner.flightuser.professional", read_only=True)
+    ownerFlagged = serializers.BooleanField(source="owner.flightuser.flagged", read_only=True)
+    # END OF DEPRECATION COMMENT
+
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     validatedBy = serializers.ReadOnlyField(source="validatedBy.user.username", allow_null=True)
-    ownerFlagged = serializers.BooleanField(source="owner.flightuser.flagged", read_only=True)
     hasImage = serializers.BooleanField(write_only=True, required=False, default=False)
     image = Base64ImageField(required=False)
 
@@ -94,7 +99,7 @@ class FlightSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flight
-        fields = ('flightID', 'taxonomy','latitude', 'longitude', 'radius', 'dateOfFlight', 'owner', 'ownerProfessional', 'ownerFlagged', 'dateRecorded', 'weather', 'comments', 'hasImage', 'image', 'confidence', 'size', 'validated', 'validatedBy', 'validatedAt')
+        fields = ('flightID', 'taxonomy','latitude', 'longitude', 'radius', 'dateOfFlight', 'owner', 'ownerRole', 'ownerProfessional', 'ownerFlagged', 'dateRecorded', 'weather', 'comments', 'hasImage', 'image', 'confidence', 'size', 'validated', 'validatedBy', 'validatedAt')
         read_only_fields = ('dateRecorded', 'validatedAt')
 
 class FlightSerializerBarebones(serializers.ModelSerializer):
