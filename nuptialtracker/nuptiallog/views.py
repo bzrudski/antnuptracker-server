@@ -356,7 +356,7 @@ class ValidateInvalidateFlight(APIView):
 
             flight.save()
 
-            Changelog.objects.create(user=request.user, flight=f, event=f"Flight validated by {request.user.username}.", date=timeOfValidation)
+            Changelog.objects.create(user=request.user, flight=flight, event=f"Flight validated by {request.user.username}.", date=timeOfValidation)
 
         else:
             flight.validatedBy = None
@@ -364,7 +364,7 @@ class ValidateInvalidateFlight(APIView):
 
             flight.save()
 
-            Changelog.objects.create(user=request.user, flight=f, event=f"Flight unvalidated by {request.user.username}.", date=timezone.now().replace(microsecond=0))
+            Changelog.objects.create(user=request.user, flight=flight, event=f"Flight unvalidated by {request.user.username}.", date=timezone.now().replace(microsecond=0))
 
         notificationThread = Thread(target=self.notify_user, args=[request, pk, validate])
         notificationThread.start()
@@ -641,7 +641,10 @@ class LoginView(KnoxLoginView):
         #         context=self.get_context()
         #     ).data)
 
-        data.update(FlightUserSerializer(request.user.flightuser, context=self.get_context()).data)
+        user_info = FlightUserSerializer(request.user.flightuser, context=self.get_context()).data
+        data.update(user_info)
+
+        data["user"] = user_info
 
         return data
 

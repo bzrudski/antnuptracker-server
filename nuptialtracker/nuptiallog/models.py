@@ -187,6 +187,10 @@ class Device(models.Model):
     OS_CHOICES = [
         ('IOS', 'iOS'),
         ('ANDROID', 'Android'),
+        ('WINDOWS', 'Windows'),
+        ('MACOS', 'macOS'),
+        ('LINUX', 'Linux'),
+        ('FUCHSIA', 'Fuchsia'),
     ]
     platform = models.CharField(max_length=10, choices=OS_CHOICES)
     model = models.CharField(max_length=64)
@@ -220,7 +224,10 @@ def logout_device(sender, instance, **kwargs):
             device = sender.device
             device.active = False
             device.save()
-        except:
+        except Exception as error:
+            print("Logout error:")
+            print(error)
+            # print(error)
             return
 
 signals.pre_delete.connect(logout_device, sender=AuthToken, weak=False, dispatch_uid='models.logout_device')
