@@ -74,3 +74,27 @@ class IsProfessional(permissions.BasePermission):
             return False
 
         return request.user.flightuser.professional
+
+
+class IsProfessionalOrReadOnly(permissions.BasePermission):
+    """
+    For privileges granted only to professional myrmecologists.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        if request.user is AnonymousUser:
+            return False
+
+        return request.user.flightuser.professional
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        if request.auth == None:
+            return False
+
+        return request.user.flightuser.professional

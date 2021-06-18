@@ -39,7 +39,7 @@ urlpatterns = [
     path('genera/', views.GenusListView.as_view()),
     path('genera/<str:genus>/', views.SpeciesDetailView.as_view()),
     path('media/flight_pics/<str:filename>', views.ImageView.as_view()),
-    path('users/', views.UserListView.as_view()),
+    # path('users/', views.UserListView.as_view()),
     path('users/<str:username>/', views.UserDetailView.as_view()),
     path('comments/', views.CommentList.as_view()),
     # Migrate over to have api in the url to separate from the rest of the site
@@ -48,6 +48,7 @@ urlpatterns = [
     path('api/flights/<int:pk>/history/', views.ChangelogForFlight.as_view()),
     path('api/flights/<int:pk>/weather/', views.WeatherForFlight.as_view()),
     path('api/flights/<int:pk>/validate/', views.ValidateFlight.as_view()),
+    path('api/flights/<int:pk>/validate-flight/', views.ValidateInvalidateFlight.as_view()),
     path('api/flights/download', FlightDataExport.as_view(), name='downloadview'),
     path('api/flights/download-json', views.FlightListNested.as_view(), name='nestedjson'),
     path('api/my-flights/', views.MyFlightsList.as_view()),
@@ -55,7 +56,7 @@ urlpatterns = [
     path('api/genera/', views.GenusListView.as_view()),
     path('api/genera/<str:genus>/', views.SpeciesDetailView.as_view()),
     path('api/media/flight_pics/<str:filename>', views.ImageView.as_view()),
-    path('api/users/', views.UserListView.as_view()),
+    # path('api/users/', views.UserListView.as_view()),
     path('api/users/<str:username>/', views.UserDetailView.as_view()),
     path('api/comments/', views.CommentList.as_view()),
     # Non-api views, frontend for website

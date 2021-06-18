@@ -65,6 +65,7 @@ a {
 
 .buttoncontainer{
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     position: relative;
     top: 3%;
