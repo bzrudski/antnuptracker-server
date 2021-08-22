@@ -15,15 +15,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# 
 
-from rest_framework import serializers
-from .models import Flight, Comment, FlightUser, Changelog, Weather, WeatherDescription, BasicWeatherData, DayInfo, WindInfo,RainInfo, Role, Genus, Species
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import password_validation
-from drf_extra_fields.fields import Base64ImageField
 from django.utils.timezone import datetime
+from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
+from .models import Flight, Comment, FlightImage, FlightUser, Changelog, Weather, WeatherDescription, BasicWeatherData, DayInfo, WindInfo, RainInfo, Role, Genus, Species
 
 # Define flight serializer
 class GenusSerializer(serializers.ModelSerializer):
@@ -38,18 +38,18 @@ class SpeciesSerializer(serializers.ModelSerializer):
         fields = ['genus','name']
 
 class CommentSerializer(serializers.ModelSerializer):
-    flight = serializers.IntegerField(source="responseTo.flightID")
+    flight = serializers.ReadOnlyField(source="responseTo.flightID")
     author = serializers.ReadOnlyField(source="author.username")
     role = serializers.ReadOnlyField(source="author.flightuser.status")
     time = serializers.ReadOnlyField()
 
     class Meta:
         model = Comment
-        fields = ('flight', 'author', 'role', 'text', 'time')
+        fields = ('id', 'flight', 'author', 'role', 'text', 'time')
 
 class FlightSerializer(serializers.ModelSerializer):
     taxonomy = SpeciesSerializer(source='species')
-    comments = CommentSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True, required=False)
     owner = serializers.ReadOnlyField(source="owner.username")
     ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
 
@@ -82,7 +82,7 @@ class FlightSerializer(serializers.ModelSerializer):
                 instance.image = None
                 # print("No image")
 
-            elif validated_data["image"] == None:
+            elif validated_data["image"] is None:
                 instance.image = old_image
                 # print("Old image")
 
@@ -90,10 +90,12 @@ class FlightSerializer(serializers.ModelSerializer):
                 instance.image = validated_data["image"]
                 # print("New image")
         except:
-            instance.image=old_image
+            instance.image = old_image
             # print("All else failed... old image")
 
+        # print("Saving instance...")
         instance.save()
+        # print("Saved instance")
 
         return instance
 
@@ -101,10 +103,15 @@ class FlightSerializer(serializers.ModelSerializer):
         model = Flight
         fields = ('flightID', 'taxonomy','latitude', 'longitude', 'radius', 'dateOfFlight', 'owner', 'ownerRole', 'ownerProfessional', 'ownerFlagged', 'dateRecorded', 'weather', 'comments', 'hasImage', 'image', 'confidence', 'size', 'validated', 'validatedBy', 'validatedAt')
         read_only_fields = ('dateRecorded', 'validatedAt')
+        extra_kwargs = {
+            'dateRecorded': {'required': False},
+            'owner': {'required': False},
+            'flightID': {'required': False},
+        }
 
 class FlightSerializerBarebones(serializers.ModelSerializer):
     taxonomy = SpeciesSerializer(source='species')
-    owner = serializers.CharField(source="owner.username")
+    owner = serializers.ReadOnlyField(source="owner.username")
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
     lastUpdated = serializers.ReadOnlyField(source='getLastUpdated')
@@ -112,10 +119,10 @@ class FlightSerializerBarebones(serializers.ModelSerializer):
 
     class Meta:
         model = Flight
-        fields = ('flightID', 'taxonomy', 'owner', 'ownerRole', 'latitude', 'longitude','radius', 'dateOfFlight', 'dateRecorded', 'image', 'confidence', 'size', 'lastUpdated', 'validated')
+        fields = ('flightID', 'taxonomy', 'owner', 'ownerRole', 'latitude', 'longitude','radius', 'dateOfFlight', 'image', 'confidence', 'size', 'lastUpdated', 'validated') #, 'dateRecorded',
         extra_kwargs = {
             'radius': {'write_only': True},
-            'dateRecorded': {'write_only':  True},
+            # 'dateRecorded': {'write_only':  True},
             'comments': {'write_only':  True},
             'image': {'write_only':  True},
             'confidence': {'write_only':  True},
@@ -123,42 +130,55 @@ class FlightSerializerBarebones(serializers.ModelSerializer):
             }
         # ordering = ['-dateRecorded']
 
+class SimpleFlightSerializer(serializers.ModelSerializer):
+    lastUpdated = serializers.ReadOnlyField(source='getLastUpdated')
+
+    class Meta:
+        model = Flight
+        fields = ('flightID', 'lastUpdated')
+
+class FlightImageSerializer(serializers.ModelSerializer):
+    created_by = serializers.ReadOnlyField(source='created_by.username')
+    class Meta:
+        model = FlightImage
+        fields = '__all__'
+
 class SpeciesListSerializer(serializers.Serializer):
     species = SpeciesSerializer(many=True, write_only=True)
 
     def validate_species(self, value):
-        validatedSpecies = []
+        validated_species = []
 
         for entry in value:
-            genusName = entry["genus"]["name"]
-            speciesName = entry["name"]
+            genus_name = entry["genus"]["name"]
+            species_name = entry["name"]
 
-            genus = Genus.objects.get(name=genusName)
-            species = Species.objects.get(genus=genus, name=speciesName)
+            genus = Genus.objects.get(name=genus_name)
+            species = Species.objects.get(genus=genus, name=species_name)
 
-            validatedSpecies.append(species)
+            validated_species.append(species)
 
         # print(validatedSpecies)
-        return validatedSpecies
+        return validated_species
 
 class GenusListSerializer(serializers.Serializer):
     genera = GenusSerializer(many=True, write_only=True)
 
     def validate_genera(self, value):
-        validatedGenera = []
+        validated_genera = []
 
         for entry in value:
-            genusName = entry["name"]
+            genus_name = entry["name"]
 
-            genus = Genus.objects.get(name=genusName)
+            genus = Genus.objects.get(name=genus_name)
 
-            validatedGenera.append(genus)
+            validated_genera.append(genus)
 
         # print(validatedGenera)
-        return validatedGenera
+        return validated_genera
 
 class FlightValidationSerializer(serializers.Serializer):
-    flightID = serializers.IntegerField()
+    flightID = serializers.IntegerField(read_only=True)
     validate = serializers.BooleanField(required=False)
     validated = serializers.BooleanField(write_only=True, required=False)
     validatedBy = serializers.CharField(write_only=True, required=False, allow_null=True)
@@ -177,7 +197,7 @@ class UserSerializer(serializers.ModelSerializer):
         return password
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('username', 'password', 'professional', 'email')
         write_only_fields = ('password', 'professional')
 
@@ -262,14 +282,14 @@ class FlatWeatherSerializer(serializers.ModelSerializer):
         for key in day:
             rep[key] = day[key]
 
-        if rain != None:
+        if rain is not None:
             for key in rain:
                 rep[key] = rain[key]
         else:
             rep['rain1'] = None
             rep['rain3'] = None
 
-        if wind != None:
+        if wind is not None:
             for key in wind:
                 rep[key] = wind[key]
         else:
@@ -305,7 +325,7 @@ class FlightSerializerExport(serializers.ModelSerializer):
 
     confidence_level = serializers.CharField(source="get_confidence_string")
     flight_size = serializers.CharField(source="get_size_string")
-    
+
     def validate_date_of_flight(self, val):
         return val.replace(tzinfo=None)
 
@@ -330,7 +350,7 @@ class FlightSerializerExport(serializers.ModelSerializer):
                     continue
 
                 rep[f"{key}_{i}"] = comment[key]
-            
+
             i += 1
 
         for key in rep:
@@ -367,3 +387,22 @@ class FlightSerializerFull(serializers.ModelSerializer):
         fields = ('flightID', 'genus', 'species', 'confidence_level', 'dateOfFlight', 'latitude','longitude', 'flight_size', 'reported_by', 'user_professional', 'user_flagged', 'dateRecorded', 'validated', 'validated_by', 'validated_at', 'weather', 'comments', 'image')
 
 # class FlightSerializerAllNested(serializers)
+
+
+class GenusNameIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genus
+        fields = ['id', 'name']
+
+class NewSpeciesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Species
+        fields = ["id", "name"]
+
+class NewGenusSerializer(serializers.ModelSerializer):
+    # species = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    species = NewSpeciesSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Genus
+        fields = ['id', 'name', 'species']

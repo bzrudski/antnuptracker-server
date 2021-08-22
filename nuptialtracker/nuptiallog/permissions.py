@@ -18,8 +18,8 @@
 # 
 
 from rest_framework import permissions
-from .models import Role
 from django.contrib.auth.models import AnonymousUser
+from .models import Flight, Role
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
@@ -98,3 +98,62 @@ class IsProfessionalOrReadOnly(permissions.BasePermission):
             return False
 
         return request.user.flightuser.professional
+
+class IsAuthorOrReadOnly(permissions.BasePermission):
+    """
+    Defines permission (for comments) to only allow the owner
+    of an object (comment) to modify and remove it.
+    """
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        
+        return obj.author == request.user
+
+class IsAuthor(permissions.BasePermission):
+    """
+    Defines permission (for comments) to only allow the owner
+    of an object (comment) to modify and remove it.
+    """
+    def has_object_permission(self, request, view, obj):
+        return obj.author == request.user
+
+class IsFlightOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Defines permission for flight images to only allow the
+    owner of a flight to add/modify images.
+    """
+    def __init__(self, flight_id) -> None:
+        self.flight_id = flight_id
+        super().__init__()
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        print("Checking flight permission...")
+        has_permission = Flight.objects.get(pk=self.flight_id).owner == request.user
+        print("User has permission: " + str(has_permission))
+        return has_permission
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        print("Checking flight permission...")
+        has_permission = Flight.objects.get(pk=self.flight_id).owner == request.user
+        print("User has permission: " + str(has_permission))
+        return has_permission
+
+
+class IsImageOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Defines permission (for flight images) to only allow the owner
+    of an object (flight image) to modify and remove it.
+    """
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        print("Checking image permissions...")
+        return obj.created_by == request.user

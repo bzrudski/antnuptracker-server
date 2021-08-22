@@ -20,6 +20,8 @@
 from django.urls import path, include
 from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
+# from rest_framework.routers import DefaultRouter
+from rest_framework_nested import routers
 from .pandasViews import FlightDataExport
 from . import views
 
@@ -38,23 +40,26 @@ urlpatterns = [
     path('my-species/', views.MySpeciesList.as_view()),
     path('genera/', views.GenusListView.as_view()),
     path('genera/<str:genus>/', views.SpeciesDetailView.as_view()),
+    path('latest-taxonomy/', views.TaxonomyView.as_view()),
     path('media/flight_pics/<str:filename>', views.ImageView.as_view()),
     # path('users/', views.UserListView.as_view()),
     path('users/<str:username>/', views.UserDetailView.as_view()),
     path('comments/', views.CommentList.as_view()),
     # Migrate over to have api in the url to separate from the rest of the site
-    path('api/flights/', views.FlightList.as_view()),
-    path('api/flights/<int:pk>/', views.FlightDetail.as_view()),
-    path('api/flights/<int:pk>/history/', views.ChangelogForFlight.as_view()),
-    path('api/flights/<int:pk>/weather/', views.WeatherForFlight.as_view()),
-    path('api/flights/<int:pk>/validate/', views.ValidateFlight.as_view()),
-    path('api/flights/<int:pk>/validate-flight/', views.ValidateInvalidateFlight.as_view()),
+    # path('api/flights/', views.FlightList.as_view()),
+    # path('api/flights/<int:pk>/', views.FlightDetail.as_view()),
+    # path('api/flights/<int:pk>/history/', views.ChangelogForFlight.as_view()),
+    # path('api/flights/<int:pk>/weather/', views.WeatherForFlight.as_view()),
+    # path('api/flights/<int:pk>/validate/', views.ValidateFlight.as_view()),
+    # path('api/flights/<int:pk>/validate-flight/', views.ValidateInvalidateFlight.as_view()),
     path('api/flights/download', FlightDataExport.as_view(), name='downloadview'),
     path('api/flights/download-json', views.FlightListNested.as_view(), name='nestedjson'),
     path('api/my-flights/', views.MyFlightsList.as_view()),
     path('api/my-species/', views.MySpeciesList.as_view()),
-    path('api/genera/', views.GenusListView.as_view()),
-    path('api/genera/<str:genus>/', views.SpeciesDetailView.as_view()),
+    path('api/my-genera/', views.MyGenusList.as_view()),
+    # path('api/genera/', views.GenusListView.as_view()),
+    # path('api/genera/<str:genus>/', views.SpeciesDetailView.as_view()),
+    path('api/latest-taxonomy/', views.TaxonomyView.as_view()),
     path('api/media/flight_pics/<str:filename>', views.ImageView.as_view()),
     # path('api/users/', views.UserListView.as_view()),
     path('api/users/<str:username>/', views.UserDetailView.as_view()),
@@ -79,4 +84,25 @@ urlpatterns = [
     # path('user_management/', include('django.contrib.auth.urls')),
 ]
 
+flights_router = routers.DefaultRouter()
+flights_router.register(r'flights', views.FlightViewSet, basename="flights")
+
+comments_router = routers.NestedDefaultRouter(flights_router, r'flights', lookup='flight')
+comments_router.register(r'comments', views.CommentViewSet, basename='flight-comments')
+
+images_router = routers.NestedDefaultRouter(flights_router, r'flights', lookup='flight')
+images_router.register(r'images', views.FlightImageViewSet, basename='flight-images')
+
+genera_router = routers.DefaultRouter()
+genera_router.register(r'genera', views.GenusViewSet, basename="genera")
+
+species_router = routers.NestedDefaultRouter(genera_router, r'genera', lookup="genus")
+species_router.register(r'species', views.SpeciesViewSet, basename='species')
+
 urlpatterns = format_suffix_patterns(urlpatterns)
+
+urlpatterns += [url(r'^api/', include(flights_router.urls))]
+urlpatterns += [url(r'^api/', include(comments_router.urls))]
+urlpatterns += [url(r'^api/', include(images_router.urls))]
+urlpatterns += [url(r'^api/', include(genera_router.urls))]
+urlpatterns += [url(r'^api/', include(species_router.urls))]

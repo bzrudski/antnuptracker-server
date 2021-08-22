@@ -108,8 +108,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES'   : (
         'knox.auth.TokenAuthentication',
     ),
-   'DEFAULT_PAGINATION_CLASS'  :   'rest_framework.pagination.LimitOffsetPagination',
-   'PAGE_SIZE'    :    15,
+#    'DEFAULT_PAGINATION_CLASS'  :   'rest_framework.pagination.LimitOffsetPagination',
+#    'PAGE_SIZE'    :    15,
 }
 
 REST_KNOX = {

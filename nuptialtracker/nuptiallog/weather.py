@@ -15,47 +15,47 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# 
+#
 
+# import json
 import requests
-import json
 from .models import Weather, Flight, WeatherDescription, BasicWeatherData, DayInfo, WindInfo, RainInfo
 from django.utils import timezone
 import datetime
 import os
 
-def generateURLforCoordinates(lat, lon):
+def generate_url_coord(lat, lon):
     API_KEY = os.getenv("WEATHERKEY")
     url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=metric&APPID={API_KEY}"
     return url
 
-def generateURLforCoordinatesOneCall(lat, lon, time):
+def generate_url_one_call_coord(lat, lon, time):
     API_KEY = os.getenv("WEATHERKEY")
     epoch = datetime.datetime.utcfromtimestamp(0)
-    timeSinceEpoch = int((time - epoch).total_seconds())
+    time_since_epoch = int((time - epoch).total_seconds())
     # print("Time since epoch: " + str(timeSinceEpoch))
-    url = f"https://api.openweathermap.org/data/2.5/onecall/timemachine?lat={lat}&lon={lon}&dt={timeSinceEpoch}&units=metric&appid={API_KEY}"
+    url = f"https://api.openweathermap.org/data/2.5/onecall/timemachine?lat={lat}&lon={lon}&dt={time_since_epoch}&units=metric&appid={API_KEY}"
     # print(url)
     return url
 
-def getWeatherForLocation(lat, lon, old=False, time=None):
+def get_weather_for_location(lat, lon, old=False, time=None):
     if old:
-        url = generateURLforCoordinatesOneCall(lat, lon, time)
+        url = generate_url_one_call_coord(lat, lon, time)
     else:
-        url = generateURLforCoordinates(lat, lon)
+        url = generate_url_coord(lat, lon)
     response = requests.get(url)
     return response.json()
 
-def parseHistoricalWeatherData(weatherData, time, flight):
-    basicWeatherData = weatherData['current']
-    utcoffset = datetime.timedelta(seconds=int(weatherData['timezone_offset']))
+def parse_historical_weather(weather_data, time, flight):
+    basic_weather_data = weather_data['current']
+    utcoffset = datetime.timedelta(seconds=int(weather_data['timezone_offset']))
 
-    temp = basicWeatherData['temp']
-    pressure = basicWeatherData['pressure']
-    humidity = basicWeatherData['humidity']
-    clouds = basicWeatherData['clouds']
+    temp = basic_weather_data['temp']
+    pressure = basic_weather_data['pressure']
+    humidity = basic_weather_data['humidity']
+    clouds = basic_weather_data['clouds']
 
-    basicWeather = BasicWeatherData.objects.create(
+    basic_weather = BasicWeatherData.objects.create(
         temperature=temp,
         pressure=pressure,
         pressureSea=None,
@@ -66,31 +66,31 @@ def parseHistoricalWeatherData(weatherData, time, flight):
         tempMax=None
     )
 
-    windSpeed = basicWeatherData.get('wind_speed')
-    windDegree = basicWeatherData.get('wind_deg')
+    wind_speed = basic_weather_data.get('wind_speed')
+    wind_degree = basic_weather_data.get('wind_deg')
 
-    if windSpeed or windDegree:
+    if wind_speed or wind_degree:
         wind = WindInfo.objects.create(
-            windSpeed=windSpeed,
-            windDegree=windDegree
+            windSpeed=wind_speed,
+            windDegree=wind_degree
         )
     else:
         wind = None
 
     try:
-        rainRaw = weatherData['rain']
-        rain1 = rainRaw.get('1h')
-        rain3 = rainRaw.get('3h')
+        rain_raw = weather_data['rain']
+        rain1 = rain_raw.get('1h')
+        rain3 = rain_raw.get('3h')
 
         if rain1 or rain3:
             rain = RainInfo.objects.create(rain1=rain1, rain3=rain3)
         else:
             rain = None
-    except:
+    except KeyError:
         rain = None
 
-    sunrise = timezone.datetime.fromtimestamp(basicWeatherData['sunrise']) + utcoffset
-    sunset = timezone.datetime.fromtimestamp(basicWeatherData['sunset']) + utcoffset
+    sunrise = timezone.datetime.fromtimestamp(basic_weather_data['sunrise']) + utcoffset
+    sunset = timezone.datetime.fromtimestamp(basic_weather_data['sunset']) + utcoffset
 
     day = DayInfo.objects.create(
         sunrise=sunrise,
@@ -98,123 +98,133 @@ def parseHistoricalWeatherData(weatherData, time, flight):
     )
 
     desc = ""
-    longDesc = ""
+    long_desc = ""
 
-    for entry in basicWeatherData['weather']:
+    for entry in basic_weather_data['weather']:
         desc += entry['main'] + "\n"
-        longDesc += entry['description'] + "\n"
+        long_desc += entry['description'] + "\n"
 
     desc = desc.strip()
-    longDesc = longDesc.strip()
+    long_desc = long_desc.strip()
 
     description = WeatherDescription.objects.create(
         desc=desc,
-        longDesc=longDesc
+        longDesc=long_desc
     )
 
-    timeFetched = time.replace(tzinfo=None, microsecond=0) + utcoffset
+    time_fetched = time.replace(tzinfo=None, microsecond=0) + utcoffset
 
     weather = Weather.objects.create(
         flight=flight,
         description=description,
-        weather=basicWeather,
+        weather=basic_weather,
         day=day,
         rain=rain,
         wind=wind,
-        timeFetched=timeFetched
+        timeFetched=time_fetched
     )
 
     return weather
 
-def parseCurrentWeatherData(weatherData, time, flight):
-    weatherDescriptions = weatherData['weather']
+def parse_current_weather(weather_data, time, flight):
+    weather_descriptions = weather_data['weather']
     desc = ""
-    longDesc = ""
+    long_desc = ""
 
-    i=-1
+    i = -1
 
-    for i in range(0, len(weatherDescriptions)-2):
-        desc += weatherDescriptions[i]['main'] + "\n"
-        longDesc += weatherDescriptions[i]['description'] + "\n"
+    for i in range(0, len(weather_descriptions)-2):
+        desc += weather_descriptions[i]['main'] + "\n"
+        long_desc += weather_descriptions[i]['description'] + "\n"
 
     i += 1
 
-    desc += weatherDescriptions[i]['main']
-    longDesc += weatherDescriptions[i]['description']
+    desc += weather_descriptions[i]['main']
+    long_desc += weather_descriptions[i]['description']
 
-    description = WeatherDescription.objects.create(desc=desc, longDesc=longDesc)
+    description = WeatherDescription.objects.create(desc=desc, longDesc=long_desc)
 
-    basicWeather = weatherData['main']
-    temperature = basicWeather['temp']
-    pressure = basicWeather['pressure']
-    humidity = basicWeather['humidity']
-    tempMin = basicWeather['temp_min']
-    tempMax = basicWeather['temp_max']
+    basic_weather = weather_data['main']
+    temperature = basic_weather['temp']
+    pressure = basic_weather['pressure']
+    humidity = basic_weather['humidity']
+    temp_min = basic_weather['temp_min']
+    temp_max = basic_weather['temp_max']
 
     try:
-        clouds = weatherData['clouds']['all']
+        clouds = weather_data['clouds']['all']
     except KeyError:
         clouds = 0
 
-    try:
-        pressureSea = basicWeather['sea_level']
-    except KeyError:
-        pressureSea = None
+    pressure_sea = basic_weather.get('sea_level')
+    pressure_ground = basic_weather.get('grnd_level')
+    
+    # try:
+    #     pressure_sea = basic_weather['sea_level']
+    # except KeyError:
+    #     pressure_sea = None
 
-    try:
-        pressureGround = basicWeather['grnd_level']
-    except KeyError:
-        pressureGround = None
+    # try:
+    #     pressure_ground = basic_weather['grnd_level']
+    # except KeyError:
+    #     pressure_ground = None
 
-    weatherInfo = BasicWeatherData.objects.create(
+    weather_info = BasicWeatherData.objects.create(
         temperature=temperature,
         pressure=pressure,
         humidity=humidity,
-        tempMin=tempMin,
-        tempMax=tempMax,
-        pressureSea=pressureSea,
-        pressureGround=pressureGround,
+        tempMin=temp_min,
+        tempMax=temp_max,
+        pressureSea=pressure_sea,
+        pressureGround=pressure_ground,
         clouds=clouds
     )
 
     try:
-        windInfoRaw = weatherData["wind"]
-        try:
-            windSpeed = windInfoRaw['speed']
-        except KeyError:
-            windSpeed = 0
+        wind_info_raw = weather_data["wind"]
+        wind_speed = wind_info_raw.get("speed", 0)
+        wind_degree = wind_info_raw.get("deg", 0)
 
-        try:
-            windDegree = windInfoRaw['deg']
-        except:
-            windDegree = 0
-        wind = WindInfo.objects.create(windSpeed=windSpeed, windDegree=windDegree)
+        # try:
+        #     wind_speed = wind_info_raw['speed']
+        # except KeyError:
+        #     wind_speed = 0
 
-    except:
+        # try:
+        #     wind_degree = wind_info_raw['deg']
+        # except:
+        #     wind_degree = 0
+        wind = WindInfo.objects.create(windSpeed=wind_speed, windDegree=wind_degree)
+
+    except KeyError:
         wind = None
 
-    utcoffset = timezone.timedelta(seconds=int(weatherData["timezone"]))
+    utc_offset = timezone.timedelta(seconds=int(weather_data["timezone"]))
 
-    sunrise = timezone.datetime.fromtimestamp(weatherData['sys']['sunrise']) + utcoffset
-    sunset = timezone.datetime.fromtimestamp(weatherData['sys']['sunset']) + utcoffset
-    timeFetched = timezone.now().replace(tzinfo=None, microsecond=0) + utcoffset
+    sunrise = timezone.datetime.fromtimestamp(weather_data['sys']['sunrise']) + utc_offset
+    sunset = timezone.datetime.fromtimestamp(weather_data['sys']['sunset']) + utc_offset
+    time_fetched = timezone.now().replace(tzinfo=None, microsecond=0) + utc_offset
 
     day = DayInfo.objects.create(sunrise=sunrise, sunset=sunset)
 
     try:
-        rainRaw = weatherData['rain']
-        try:
-            rain1 = rainRaw['1h']
-        except:
-            rain1 = None
-
-        try:
-            rain3 = rainRaw['3h']
-        except:
-            rain3 = None
-
+        rain_raw = weather_data['rain']
+        rain1 = rain_raw.get('1h')
+        rain3 = rain_raw.get('3h')
+        
         rain = RainInfo.objects.create(rain1=rain1, rain3=rain3)
-    except:
+        
+        # try:
+        #     rain1 = rain_raw['1h']
+        # except KeyError:
+        #     rain1 = None
+
+        # try:
+        #     rain3 = rain_raw['3h']
+        # except KeyError:
+        #     rain3 = None
+
+    except KeyError:
         rain = None
 
     # print("Got all variables")
@@ -222,38 +232,40 @@ def parseCurrentWeatherData(weatherData, time, flight):
     weather = Weather.objects.create(
         flight=flight,
         description=description,
-        weather=weatherInfo,
+        weather=weather_info,
         day=day,
         rain=rain,
         wind=wind,
-        timeFetched=timeFetched
+        timeFetched=time_fetched
     )
 
-def getWeatherForFlight(flight):
-    dateOfFlight = flight.dateOfFlight
-    dateNow = timezone.now()
+    return weather
+
+def get_weather_for_flight(flight):
+    date_of_flight = flight.dateOfFlight
+    current_time = timezone.now()
 
     # print("Got times")
 
 
-    if ((dateNow - dateOfFlight) > timezone.timedelta(days=5)):
+    if (current_time - date_of_flight) > timezone.timedelta(days=5):
         return None
 
     lat = round(flight.latitude, 3)
     lon = round(flight.longitude, 3)
     # print("Got location")
 
-    old = (dateNow-dateOfFlight > timezone.timedelta(hours=5))
+    old = (current_time-date_of_flight > timezone.timedelta(minutes=30))
 
     # rawDate = (dateOfFlight - dateOfFlight.utcoffset()).replace(tzinfo=None)
 
-    weatherData = getWeatherForLocation(lat, lon, old=old, time=dateOfFlight)
+    weather_data = get_weather_for_location(lat, lon, old=old, time=date_of_flight)
     # print(weatherData)
 
     if old:
-        weather = parseHistoricalWeatherData(weatherData, dateNow, flight)
+        weather = parse_historical_weather(weather_data, current_time, flight)
     else:
-        weather = parseCurrentWeatherData(weatherData, dateNow, flight)
+        weather = parse_current_weather(weather_data, current_time, flight)
 
     # print(weather)
     # print("Weather created")
@@ -272,32 +284,35 @@ def getWeatherForFlight(flight):
 #     def dequeue(self):
 #         return self.locations.pop(index=0)
 
-class FlightQueue:
-    def __init__(self, flights=[]):
-        self.flights = flights
+# class FlightQueue:
+#     def __init__(self, flights=None):
+#         if flights is not None:
+#             self.flights = flights
+#         else:
+#             self.flights = []
 
-    def enqueue(self, flight):
-        self.flights.append(flight)
+#     def enqueue(self, flight):
+#         self.flights.append(flight)
 
-    def dequeue(self):
-        return self.flights.pop(index=0)
+#     def dequeue(self):
+#         return self.flights.pop(index=0)
 
-    def isEmpty(self):
-        return len(self.flights) == 0
+#     def isEmpty(self):
+#         return len(self.flights) == 0
 
 # def getWeatherForTop(queue):
 #         lat, lon = queue.dequeue()
 #         weatherJSON = getWeatherForLocation(lat, lon)
 #         Weather.objects.create()
 
-class WeatherManagement:
-    flights = FlightQueue()
-    numberOfCallsPerMinute = 0
-    MAX_CALLS = 59
+# class WeatherManagement:
+#     flights = FlightQueue()
+#     numberOfCallsPerMinute = 0
+#     MAX_CALLS = 59
 
-    def getWeatherForFlights(self):
-        for flight in self.flights:
-            lat = flight.latitude
-            lon = flight.longitude
+#     def getWeatherForFlights(self):
+#         for flight in self.flights:
+#             lat = flight.latitude
+#             lon = flight.longitude
 
-            weather = getWeatherForLocation(lat, lon)
+#             weather = get_weather_for_location(lat, lon)

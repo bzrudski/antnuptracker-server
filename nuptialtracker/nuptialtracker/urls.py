@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# 
+#
 
 """nuptialtracker URL Configuration
 
@@ -40,11 +40,15 @@ from nuptiallog.views import LoginView, VerifyTokenView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('nuptiallog.urls')),
-    path('api-auth',include('rest_framework.urls')),
+    path('api-auth', include('rest_framework.urls')),
     path('login/', LoginView.as_view()),
     path('login/verify/', VerifyTokenView.as_view()),
     path('logoutall/', knoxViews.LogoutAllView.as_view()),
-    path('logout/', knoxViews.LogoutView.as_view())
+    path('logout/', knoxViews.LogoutView.as_view()),
+    path('api/login/', LoginView.as_view()),
+    path('api/login/verify/', VerifyTokenView.as_view()),
+    path('api/logoutall/', knoxViews.LogoutAllView.as_view()),
+    path('api/logout/', knoxViews.LogoutView.as_view())
     # url(r'^login/?', LoginView.as_view()),
     # url(r'^login/verify/?', VerifyTokenView.as_view()),
     # url(r'^logoutall/?', knoxViews.LogoutAllView.as_view()),

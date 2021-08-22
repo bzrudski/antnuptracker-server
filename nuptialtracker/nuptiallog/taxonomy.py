@@ -52,6 +52,8 @@ def loadSpecies(filename):
     file = open(filename, "r")
     species = {}
 
+    species["Unknown"] = []
+
     for line in file:
         #print(line)
 
@@ -71,8 +73,6 @@ def loadSpecies(filename):
             species[genus] = []
 
         (species[genus]).append(spec)
-
-    species["Unknown"]=[]
 
     for genus in species.keys():
         species[genus].insert(0, "sp. (Unknown)")

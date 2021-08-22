@@ -17,8 +17,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
-from django.db import models
+# from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.gis.db import models
 from knox.models import AuthToken
 from random import randint
 from django.db.models import signals
@@ -36,6 +37,7 @@ class Flight(models.Model):
     dateRecorded = models.DateTimeField('date recorded')
     latitude = models.FloatField()#max_digits=11,decimal_places=8)
     longitude = models.FloatField()#max_digits=11,decimal_places=8)
+    location = models.PointField(blank=True, null=True, default=None)
     radius = models.FloatField('radius of location approximation (km)', default=0.0)
 
     SIZE_OPTIONS = [
@@ -50,7 +52,7 @@ class Flight(models.Model):
     ]
     confidence = models.IntegerField('Species confidence level', choices=CONFIDENCE_CHOICES, null=True, blank=True)
     image = models.ImageField(upload_to='flight_pics', null=True, blank=True)
-    
+
     validatedBy = models.ForeignKey('FlightUser', related_name='validatedFlights', on_delete=models.SET_NULL, blank=True, null=True)
     validatedAt = models.DateTimeField('date of validation', null=True, blank=True)
 
@@ -103,6 +105,12 @@ class Flight(models.Model):
         lonCoord = 'E' if self.longitude > 0 else 'W'
 
         return f"({self.latitude:.3f}\u00b0{latCoord}, {self.longitude:.2f}\u00b0{lonCoord})"
+
+class FlightImage(models.Model):
+    flight = models.ForeignKey('Flight', on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to="flight_pics/")
+    created_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    date_created = models.DateTimeField()
 
 class Comment(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
@@ -194,7 +202,7 @@ class Device(models.Model):
     ]
     platform = models.CharField(max_length=10, choices=OS_CHOICES)
     model = models.CharField(max_length=64)
-    deviceToken = models.CharField(max_length=65, null=True, blank=True)
+    deviceToken = models.CharField(max_length=200, blank=True, default="")
     authToken = models.OneToOneField(AuthToken, on_delete=models.SET_NULL, null=True, blank=True)
     lastLoggedIn = models.DateTimeField('last logged in')
     active = models.BooleanField(default=True)
