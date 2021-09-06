@@ -101,7 +101,7 @@ class FlightSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flight
-        fields = ('flightID', 'taxonomy','latitude', 'longitude', 'radius', 'dateOfFlight', 'owner', 'ownerRole', 'ownerProfessional', 'ownerFlagged', 'dateRecorded', 'weather', 'comments', 'hasImage', 'image', 'confidence', 'size', 'validated', 'validatedBy', 'validatedAt')
+        fields = ('flightID', 'taxonomy', 'latitude', 'longitude', 'radius', 'dateOfFlight', 'owner', 'ownerRole', 'ownerProfessional', 'ownerFlagged', 'dateRecorded', 'weather', 'comments', 'hasImage', 'image', 'confidence', 'size', 'validated', 'validatedBy', 'validatedAt')
         read_only_fields = ('dateRecorded', 'validatedAt')
         extra_kwargs = {
             'dateRecorded': {'required': False},

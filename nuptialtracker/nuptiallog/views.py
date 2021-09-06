@@ -808,46 +808,66 @@ class VerifyTokenView(APIView):
         return Response(status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        auth = request.auth
-        if (request.auth != None):
-            user = request.user.flightuser
+        # auth = self.request.auth
+        if (self.request.auth != None):
+            print("Authenticated request.")
+            # user = self.request.user.flightuser
             # role = user.role.role
-            deviceID = self.request.META['HTTP_DEVICEID']
+            # deviceID = self.request.META['HTTP_DEVICEID']
+            print("Got request {}".format(self.request.data))
+            device_id = self.request.data.get("deviceID")
+            device_token = self.request.data.get("deviceToken")
+
+            if (device_id is None):
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
             try:
-                device = Device.objects.get(deviceID=deviceID)
+                device = Device.objects.get(deviceID=device_id)
 
                 device.lastLoggedIn = timezone.now()
                 device.active = True
+                device.deviceToken = device_token if device_token != None else ""
                 device.save()
+
+                user = self.request.user.flightuser
+
+                serializer = FlightUserSerializer(user)
+
+                return Response(serializer.data, status=status.HTTP_200_OK)
             except:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-            return Response({"message": "Login verified"}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 class CreateUserForm(generic.FormView):
     # In part based on code from 
     # # https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef 
     # by Farhadur Reja Fahim
-    formTemplate = 'nuptiallog/AccountCreateForm.html'
-    emailSuccessful = 'nuptiallog/EmailSent.html'
-    emailFailed = 'nuptiallog/EmailFailed.html'
+    form_template = 'nuptiallog/AccountCreateForm.html'
+    email_successful = 'nuptiallog/EmailSent.html'
+    email_failed = 'nuptiallog/EmailFailed.html'
 
     def post(self, request, *args, **kwargs):
         form = UserCreationForm(request.POST)
         if (form.is_valid()):
-            emailAddr = form.cleaned_data["email"]
+            email_addr = form.cleaned_data["email"]
 
-            if (len(User.objects.all().filter(email=emailAddr)) != 0):
+            if (len(User.objects.all().filter(email=email_addr)) != 0):
                 form.errors.update({"email":["A user with that email address already exists"]})
-                return render(request, self.formTemplate, {'form':form})
+                return render(request, self.form_template, {'form':form})
 
             professional = form.cleaned_data["professional"]
             institution = form.cleaned_data["institution"]
 
+            username = form.cleaned_data["username"]
+
+            if (len(username) < 6):
+                form.errors.update({"username":["Please enter a longer username"]})
+                return render(request, self.form_template, {"form":form})
+
             if (professional and not institution):
                 form.errors.update({"institution": ["You must enter your institution"]})
-                return render(request, self.formTemplate, {'form':form})
+                return render(request, self.form_template, {'form':form})
 
             user = form.save(commit=False)
             user.is_active = False
@@ -861,15 +881,15 @@ class CreateUserForm(generic.FormView):
             user.save()
             user.flightuser.save()
             # print("User saved")
-            currentSite = get_current_site(request)
+            current_site = get_current_site(request)
             subject = "Activate NuptialTracker Account"
             message = render_to_string('nuptiallog/ActivateEmail.html', {
                 'user': user,
-                'domain': currentSite.domain,
+                'domain': current_site.domain,
                 'uid':  urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': accountActivationToken.make_token(user)
             })
-            to_email=form.cleaned_data.get('email')
+            to_email = form.cleaned_data.get('email')
             email = EmailMessage(subject, message, to=[to_email])
             email.content_subtype = 'html'
             # print("Preparing to send e-mail.")
@@ -880,32 +900,32 @@ class CreateUserForm(generic.FormView):
                 return render(request, 'nuptiallog/EmailSent.html', {'user':user}, status=status.HTTP_201_CREATED)
             except:
                 # print("Error sending e-mail.")
-                return render(request, self.emailFailed, {'user':user}, status=400)
+                return render(request, self.email_failed, {'user':user}, status=400)
         else:
-            return render(request, self.formTemplate, {'form':form})
+            return render(request, self.form_template, {'form':form})
     def get(self, request, *args, **kwargs):
         form = UserCreationForm()
-        return render(request, self.formTemplate, {'form':form})
+        return render(request, self.form_template, {'form':form})
 
 
 # Password reset based on https://medium.com/@renjithsraj/how-to-reset-password-in-django-bd5e1d6ed652 by Renjith S Raj
 
 class ResetPasswordForm(generic.FormView):
     mobile = False
-    formTemplate = 'nuptiallog/PasswordResetForm.html'
-    emailSuccessful = 'nuptiallog/EmailSentPassChange.html'
-        
+    form_template = 'nuptiallog/PasswordResetForm.html'
+    email_successful = 'nuptiallog/EmailSentPassChange.html'
+
     def post(self, request, *args, **kwargs):
         form = PasswordResetForm(request.POST)
-        if (form.is_valid()):
+        if form.is_valid():
             to_email=form.cleaned_data.get('email')
             user = User.objects.get(email=to_email)
 
-            currentSite = get_current_site(request)
+            current_site = get_current_site(request)
             subject = "Reset NuptialTracker Password"
             message = render_to_string('nuptiallog/PasswordResetEmail.html', {
                 'user': user,
-                'domain': currentSite.domain,
+                'domain': current_site.domain,
                 'uid':  urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': passwordResetToken.make_token(user)
             })
@@ -915,12 +935,12 @@ class ResetPasswordForm(generic.FormView):
             email.send()
 
             # print("Sent e-mail")
-            return render(request, self.emailSuccessful, {'user':user, 'mobile': self.mobile}, status=status.HTTP_201_CREATED)
+            return render(request, self.email_successful, {'user':user, 'mobile': self.mobile}, status=status.HTTP_201_CREATED)
         else:
-            return render(request, self.formTemplate, {'form':form, 'mobile': self.mobile})
+            return render(request, self.form_template, {'form':form, 'mobile': self.mobile})
     def get(self, request, *args, **kwargs):
         form = PasswordResetForm()
-        return render(request, self.formTemplate, {'form':form, 'mobile': self.mobile})
+        return render(request, self.form_template, {'form':form, 'mobile': self.mobile})
 
 class UserActivationView(generic.View):
     def activate(self, request, uidb64, token):
@@ -1015,7 +1035,7 @@ class ScientistImageView(APIView):
 
 class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     """
-    Viewsets to make management of flights simpler. This viewset assumes that a different 
+    Viewsets to make management of flights simpler. This viewset assumes that a different
     serializer class is used for listing the flights and for creating them.
     """
 
@@ -1164,10 +1184,14 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     def notify_users_flight_creation(self, flight):
         body = self.generate_notification_body_creation(flight)
         species = flight.species
-        users = species.flightuser_set.all()
+        species_users = species.flightuser_set.all()
         genus = flight.genus
-        users = users.union(genus.flightuser_set.all())
-        devices = Device.objects.filter(user__flightuser__in=users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=flight.owner).values_list('deviceToken', flat=True)
+        genus_users = genus.flightuser_set.all()
+        species_devices = Device.objects.filter(user__flightuser__in=species_users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=flight.owner).values_list('deviceToken', flat=True)
+        genus_devices = Device.objects.filter(user__flightuser__in=genus_users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=flight.owner).values_list('deviceToken', flat=True)
+
+        devices = genus_devices.union(species_devices)
+
 
         title = "Flight Created"
 

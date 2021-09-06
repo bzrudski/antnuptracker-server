@@ -31,9 +31,11 @@ def generate_url_coord(lat, lon):
 
 def generate_url_one_call_coord(lat, lon, time):
     API_KEY = os.getenv("WEATHERKEY")
-    epoch = datetime.datetime.utcfromtimestamp(0)
-    time_since_epoch = int((time - epoch).total_seconds())
-    # print("Time since epoch: " + str(timeSinceEpoch))
+    epoch = timezone.datetime.utcfromtimestamp(0).replace(tzinfo=timezone.utc)
+    # epoch = timezone.now()
+    time_in_utc = time.astimezone(tz=timezone.utc)
+    time_since_epoch = int((time_in_utc - epoch).total_seconds())
+    # print("Time since epoch: " + str(time_since_epoch))
     url = f"https://api.openweathermap.org/data/2.5/onecall/timemachine?lat={lat}&lon={lon}&dt={time_since_epoch}&units=metric&appid={API_KEY}"
     # print(url)
     return url
@@ -48,7 +50,8 @@ def get_weather_for_location(lat, lon, old=False, time=None):
 
 def parse_historical_weather(weather_data, time, flight):
     basic_weather_data = weather_data['current']
-    utcoffset = datetime.timedelta(seconds=int(weather_data['timezone_offset']))
+    # utcoffset = timezone.timedelta(seconds=int(weather_data['timezone_offset']))
+    tz = timezone.utc
 
     temp = basic_weather_data['temp']
     pressure = basic_weather_data['pressure']
@@ -89,8 +92,8 @@ def parse_historical_weather(weather_data, time, flight):
     except KeyError:
         rain = None
 
-    sunrise = timezone.datetime.fromtimestamp(basic_weather_data['sunrise']) + utcoffset
-    sunset = timezone.datetime.fromtimestamp(basic_weather_data['sunset']) + utcoffset
+    sunrise = timezone.datetime.fromtimestamp(basic_weather_data['sunrise']).replace(tzinfo=tz)# + utcoffset
+    sunset = timezone.datetime.fromtimestamp(basic_weather_data['sunset']).replace(tzinfo=tz) #+ utcoffset
 
     day = DayInfo.objects.create(
         sunrise=sunrise,
@@ -112,7 +115,10 @@ def parse_historical_weather(weather_data, time, flight):
         longDesc=long_desc
     )
 
-    time_fetched = time.replace(tzinfo=None, microsecond=0) + utcoffset
+    # tz = timezone.timezone(offset=utcoffset)
+
+    # time_fetched = time.replace(microsecond=0) + utcoffset
+    time_fetched = time.replace(microsecond=0, tzinfo=tz)
 
     weather = Weather.objects.create(
         flight=flight,
@@ -201,9 +207,16 @@ def parse_current_weather(weather_data, time, flight):
 
     utc_offset = timezone.timedelta(seconds=int(weather_data["timezone"]))
 
-    sunrise = timezone.datetime.fromtimestamp(weather_data['sys']['sunrise']) + utc_offset
-    sunset = timezone.datetime.fromtimestamp(weather_data['sys']['sunset']) + utc_offset
-    time_fetched = timezone.now().replace(tzinfo=None, microsecond=0) + utc_offset
+    # tz = datetime.timezone(offset=utc_offset)
+    tz = timezone.utc
+
+    # sunrise = timezone.datetime.fromtimestamp(weather_data['sys']['sunrise']) + utc_offset
+    # sunset = timezone.datetime.fromtimestamp(weather_data['sys']['sunset']) + utc_offset
+    # time_fetched = timezone.now().replace(microsecond=0) + utc_offset
+
+    sunrise = timezone.datetime.fromtimestamp(weather_data['sys']['sunrise']).replace(tzinfo=tz)
+    sunset = timezone.datetime.fromtimestamp(weather_data['sys']['sunset']).replace(tzinfo=tz)
+    time_fetched = timezone.now().replace(microsecond=0, tzinfo=tz)
 
     day = DayInfo.objects.create(sunrise=sunrise, sunset=sunset)
 
@@ -263,8 +276,13 @@ def get_weather_for_flight(flight):
     # print(weatherData)
 
     if old:
+        print("Retrieved historical weather for flight {}.".format(flight.flightID))
+        print(weather_data)
+        print("The current time is {} and the time of flight is {}".format(current_time, date_of_flight))
         weather = parse_historical_weather(weather_data, current_time, flight)
     else:
+        print("Retrieved current weather for flight {}.".format(flight.flightID))
+        print(weather_data)
         weather = parse_current_weather(weather_data, current_time, flight)
 
     # print(weather)
