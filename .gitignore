@@ -18,3 +18,4 @@ req.txt
 nuptialtracker/private_keys/*
 nuptialtracker/nuptiallog/0015_alter_flight_location.py
 nuptialtracker/nuptiallog/0013_flightimage.py
+nuptialtracker/nuptialtracker/workspace.code-workspace
