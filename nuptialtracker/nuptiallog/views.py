@@ -454,7 +454,8 @@ class MyFlightsList(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 class MySpeciesList(mixins.ListModelMixin, generics.GenericAPIView):
-    serializer_class = SpeciesSerializer
+    # serializer_class = SpeciesSerializer
+    serializer_class = IdOnlySpeciesSerializer
     permission_classes = [permissions.IsAuthenticated]
     # pagination_class = BiggerPagesPaginator
 
@@ -466,39 +467,46 @@ class MySpeciesList(mixins.ListModelMixin, generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        serializer = SpeciesListSerializer(data=request.data)
+        serializer = IdOnlySpeciesSerializer(data=request.data, many=True)
 
         # print("Preparing to update species list")
 
         if (serializer.is_valid()):
-            species = serializer.validated_data["species"]
+            # species = serializer.validated_data["species"]
 
-            for species in species:
+            for species in serializer.validated_data:
                 # print("Adding species: "+str(species))
-                user.flightuser.species.add(species)
+                user.flightuser.species.add(species['id'])
                 # print("Species added: "+str(species))
 
-            return Response("Species list modified", status=status.HTTP_200_OK)
+            new_serializer = IdOnlySpeciesSerializer(user.flightuser.species, many=True)
+
+            return Response(new_serializer.data, status=status.HTTP_200_OK)
+            # return Response("Species list modified", status=status.HTTP_200_OK)
         # print(serializer.errors)
         return Response("Bad request", status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, *args, **kwargs):
         user = request.user
-        serializer = SpeciesListSerializer(data=request.data)
+        serializer = IdOnlySpeciesSerializer(data=request.data, many=True)
 
         if (serializer.is_valid()):
-            speciesList = serializer.validated_data["species"]
+            # speciesList = serializer.validated_data["species"]
 
-            for species in speciesList:
+            for species in serializer.validated_data:
                 # print("Removing species: "+str(species))
-                user.flightuser.species.remove(species)
+                user.flightuser.species.remove(species['id'])
 
-            return Response("Species list modified", status=status.HTTP_200_OK)
+            new_serializer = IdOnlySpeciesSerializer(user.flightuser.species, many=True)
+
+            return Response(new_serializer.data, status=status.HTTP_200_OK)
+            # return Response("Species list modified", status=status.HTTP_200_OK)
         # print(serializer.errors)
         return Response("Bad request", status=status.HTTP_400_BAD_REQUEST)
 
 class MyGenusList(mixins.ListModelMixin, generics.GenericAPIView):
-    serializer_class = GenusSerializer
+    # serializer_class = GenusSerializer
+    serializer_class = IdOnlyGenusSerializer
     permission_classes = [permissions.IsAuthenticated]
     # pagination_class = BiggerPagesPaginator
 
@@ -510,34 +518,45 @@ class MyGenusList(mixins.ListModelMixin, generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        serializer = GenusListSerializer(data=request.data)
+        print(request.data)
+        serializer = IdOnlyGenusSerializer(data=request.data, many=True)
+
+        # print(serializer.data)
 
         # print("Preparing to update genus list")
 
         if (serializer.is_valid()):
-            genera = serializer.validated_data["genera"]
+            print(serializer.validated_data)
 
-            for genus in genera:
+            # genera = serializer.validated_data["genera"]
+
+            for genus in serializer.validated_data:
                 # print("Adding genus: "+str(genus))
-                user.flightuser.genera.add(genus)
+                user.flightuser.genera.add(genus['id'])
                 # print("Genus added: "+str(genus))
 
-            return Response("Genus list modified", status=status.HTTP_200_OK)
+            new_serializer = IdOnlyGenusSerializer(user.flightuser.genera, many=True)
+
+            return Response(new_serializer.data, status=status.HTTP_200_OK)
+            # return Response("Genus list modified", status=status.HTTP_200_OK)
         # print(serializer.errors)
         return Response("Bad request", status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, *args, **kwargs):
         user = request.user
-        serializer = GenusListSerializer(data=request.data)
+        serializer = IdOnlyGenusSerializer(data=request.data, many=True)
 
         if (serializer.is_valid()):
-            genusList = serializer.validated_data["genera"]
+            # genusList = serializer.validated_data["genera"]
 
-            for genus in genusList:
+            for genus in serializer.validated_data:
                 # print("Removing genus: "+str(genus))
-                user.flightuser.genera.remove(genus)
+                user.flightuser.genera.remove(genus['id'])
 
-            return Response("Genus list modified", status=status.HTTP_200_OK)
+            
+            new_serializer = IdOnlyGenusSerializer(user.flightuser.genera, many=True)
+
+            return Response(new_serializer.data, status=status.HTTP_200_OK)
         # print(serializer.errors)
         return Response("Bad request", status=status.HTTP_400_BAD_REQUEST)
 
@@ -1215,10 +1234,14 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         # print(serializer.validated_data)
         #genusName = serializer.validated_data["genus"]["name"]
         # genus = Genus.objects.get(name=genusName)
-        genusName = serializer.validated_data["species"]["genus"]["name"]
-        genus = Genus.objects.get(name=genusName)
-        speciesName = serializer.validated_data["species"]["name"]
-        species = Species.objects.get(genus=genus, name=speciesName)
+        # genusName = serializer.validated_data["species"]["genus"]["name"]
+        # genus = Genus.objects.get(name=genusName)
+        # speciesName = serializer.validated_data["species"]["name"]
+        # species = Species.objects.get(genus=genus, name=speciesName)
+        species_id = serializer.validated_data["species"]["id"]
+        species = Species.objects.get(id=species_id)
+        # print(species)
+        genus = species.genus
         flight = serializer.save(owner=self.request.user, genus=genus, species=species, dateRecorded=date)
 
         weatherThread = Thread(target=get_weather_for_flight, args=(flight, ))
@@ -1307,10 +1330,19 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         species = flight.species
         flight_id = flight.flightID
         owner = flight.owner
-        users = species.flightuser_set.all()
+        # users = species.flightuser_set.all()
         genus = flight.genus
-        users = users.union(genus.flightuser_set.all())
-        devices = Device.objects.filter(user__flightuser__in=users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=owner).values_list('deviceToken', flat=True)
+        # users = users.union(genus.flightuser_set.all())
+        # devices = Device.objects.filter(user__flightuser__in=users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=owner).values_list('deviceToken', flat=True)
+
+        # species = flight.species
+        species_users = species.flightuser_set.all()
+        # genus = flight.genus
+        genus_users = genus.flightuser_set.all()
+        species_devices = Device.objects.filter(user__flightuser__in=species_users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=flight.owner).values_list('deviceToken', flat=True)
+        genus_devices = Device.objects.filter(user__flightuser__in=genus_users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=flight.owner).values_list('deviceToken', flat=True)
+
+        devices = genus_devices.union(species_devices)
 
         title = "Flight Edited"
 

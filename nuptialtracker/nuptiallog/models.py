@@ -131,7 +131,7 @@ class Genus(models.Model):
         return self.name
 
 class Species(models.Model):
-    name = models.CharField(max_length = 50)
+    name = models.CharField(max_length=50)
     genus = models.ForeignKey('Genus', on_delete=models.CASCADE, related_name='species')
 
     def __str__(self):

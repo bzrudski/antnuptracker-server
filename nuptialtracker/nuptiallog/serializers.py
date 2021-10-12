@@ -37,6 +37,53 @@ class SpeciesSerializer(serializers.ModelSerializer):
         model = Species
         fields = ['genus','name']
 
+
+class GenusNameIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genus
+        fields = ['id', 'name']
+
+
+class NewSpeciesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Species
+        fields = ["id", "name", "genus"]
+
+
+class NewGenusSerializer(serializers.ModelSerializer):
+    # species = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    species = NewSpeciesSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Genus
+        fields = ['id', 'name', 'species']
+
+
+class IdOnlySpeciesSerializer(serializers.Serializer):
+    # class Meta:
+    #     model = Species
+    #     fields = ['id']
+
+    id = serializers.IntegerField()
+
+    def validate_id(self, value):
+        if len(Species.objects.filter(pk = value)) > 0:
+            return value
+        raise serializers.ValidationError("Invalid species id")
+
+
+class IdOnlyGenusSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+    # class Meta:
+    #     model = Genus
+    #     fields = ['id']
+
+    def validate_id(self, value):
+        if len(Genus.objects.filter(pk = value)) > 0:
+            return value
+        raise serializers.ValidationError("Invalid genus id")
+
 class CommentSerializer(serializers.ModelSerializer):
     flight = serializers.ReadOnlyField(source="responseTo.flightID")
     author = serializers.ReadOnlyField(source="author.username")
@@ -48,7 +95,8 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'flight', 'author', 'role', 'text', 'time')
 
 class FlightSerializer(serializers.ModelSerializer):
-    taxonomy = SpeciesSerializer(source='species')
+    # taxonomy = SpeciesSerializer(source='species')
+    taxonomy = serializers.ReadOnlyField(source='species.id') #NewSpeciesSerializer(source='species')
     comments = CommentSerializer(many=True, read_only=True, required=False)
     owner = serializers.ReadOnlyField(source="owner.username")
     ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
@@ -110,7 +158,7 @@ class FlightSerializer(serializers.ModelSerializer):
         }
 
 class FlightSerializerBarebones(serializers.ModelSerializer):
-    taxonomy = SpeciesSerializer(source='species')
+    taxonomy = serializers.IntegerField(source='species.id') #SpeciesSerializer(source='species')
     owner = serializers.ReadOnlyField(source="owner.username")
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
@@ -144,17 +192,17 @@ class FlightImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class SpeciesListSerializer(serializers.Serializer):
-    species = SpeciesSerializer(many=True, write_only=True)
+    species = IdOnlySpeciesSerializer(many=True)
 
     def validate_species(self, value):
         validated_species = []
 
         for entry in value:
-            genus_name = entry["genus"]["name"]
-            species_name = entry["name"]
+            # genus_name = entry["genus"]["name"]
+            # species_name = entry["name"]
 
-            genus = Genus.objects.get(name=genus_name)
-            species = Species.objects.get(genus=genus, name=species_name)
+            # genus = Genus.objects.get(name=genus_name)
+            species = Species.objects.get(pk=entry['id'])
 
             validated_species.append(species)
 
@@ -162,20 +210,23 @@ class SpeciesListSerializer(serializers.Serializer):
         return validated_species
 
 class GenusListSerializer(serializers.Serializer):
-    genera = GenusSerializer(many=True, write_only=True)
+    genera = IdOnlyGenusSerializer(many=True)
 
-    def validate_genera(self, value):
-        validated_genera = []
+    # def validate_genera(self, value):
+    #     validated_genera = []
 
-        for entry in value:
-            genus_name = entry["name"]
+    #     print(value)
 
-            genus = Genus.objects.get(name=genus_name)
+    #     for entry in value:
+    #         genus = Genus.objects.get(pk=entry["id"])
+    #         # genus_name = entry["name"]
 
-            validated_genera.append(genus)
+    #         # genus = Genus.objects.get(name=genus_name)
 
-        # print(validatedGenera)
-        return validated_genera
+    #         validated_genera.append(genus)
+
+    #     # print(validatedGenera)
+    #     return validated_genera
 
 class FlightValidationSerializer(serializers.Serializer):
     flightID = serializers.IntegerField(read_only=True)
@@ -387,22 +438,3 @@ class FlightSerializerFull(serializers.ModelSerializer):
         fields = ('flightID', 'genus', 'species', 'confidence_level', 'dateOfFlight', 'latitude','longitude', 'flight_size', 'reported_by', 'user_professional', 'user_flagged', 'dateRecorded', 'validated', 'validated_by', 'validated_at', 'weather', 'comments', 'image')
 
 # class FlightSerializerAllNested(serializers)
-
-
-class GenusNameIdSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genus
-        fields = ['id', 'name']
-
-class NewSpeciesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Species
-        fields = ["id", "name"]
-
-class NewGenusSerializer(serializers.ModelSerializer):
-    # species = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    species = NewSpeciesSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Genus
-        fields = ['id', 'name', 'species']
