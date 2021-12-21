@@ -23,7 +23,7 @@ from django.contrib.auth import password_validation
 from django.utils.timezone import datetime
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
-from .models import Flight, Comment, FlightImage, FlightUser, Changelog, Weather, WeatherDescription, BasicWeatherData, DayInfo, WindInfo, RainInfo, Role, Genus, Species
+from .models import Flight, Comment, FlightImage, FlightUser, Changelog, Taxonomy, Weather, WeatherDescription, BasicWeatherData, DayInfo, WindInfo, RainInfo, Role, Genus, Species
 
 # Define flight serializer
 class GenusSerializer(serializers.ModelSerializer):
@@ -438,3 +438,8 @@ class FlightSerializerFull(serializers.ModelSerializer):
         fields = ('flightID', 'genus', 'species', 'confidence_level', 'dateOfFlight', 'latitude','longitude', 'flight_size', 'reported_by', 'user_professional', 'user_flagged', 'dateRecorded', 'validated', 'validated_by', 'validated_at', 'weather', 'comments', 'image')
 
 # class FlightSerializerAllNested(serializers)
+
+class TaxonomyVersionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Taxonomy
+        fields = ['version']

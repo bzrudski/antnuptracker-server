@@ -1617,6 +1617,14 @@ class FlightImageViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.
         
     #     flight_image.delete()
 
+
+class TaxonomyVersionView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        taxonomy = Taxonomy.objects.last()
+        serializer = TaxonomyVersionSerializer(taxonomy)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 def welcome(request):
     return render(request, 'nuptiallog/Welcome.html')
 

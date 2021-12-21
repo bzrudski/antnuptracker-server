@@ -282,3 +282,9 @@ class ScientificAdvisor(models.Model):
     position = models.CharField(max_length=125)
     image = models.ImageField(upload_to="scientist_pics")
     url = models.URLField(blank=True)
+
+class Taxonomy(models.Model):
+    version = models.BigAutoField(primary_key=True)
+    updated = models.DateTimeField()
+    genera = models.ManyToManyField('Genus')
+    species = models.ManyToManyField('Species')
