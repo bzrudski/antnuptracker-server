@@ -205,6 +205,8 @@ class FlightDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.De
         event = ""
         #hasChanged=False
 
+        print(serializer.validated_data)
+
         genus_name = serializer.validated_data["species"]["genus"]["name"]
         new_genus = Genus.objects.get(name=genus_name)
         new_species = Species.objects.get(genus=new_genus, name=serializer.validated_data["species"]["name"])
@@ -1267,9 +1269,13 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         event = ""
         #hasChanged=False
 
-        genus_name = serializer.validated_data["species"]["genus"]["name"]
-        new_genus = Genus.objects.get(name=genus_name)
-        new_species = Species.objects.get(genus=new_genus, name=serializer.validated_data["species"]["name"])
+        print(serializer.validated_data)
+
+        species_id = serializer.validated_data["species"]["id"]
+        new_species = Species.objects.get(pk=species_id)
+        new_genus = new_species.genus
+        # new_genus = Genus.objects.get(name=genus_name)
+        # new_species = Species.objects.get(genus=new_genus, name=serializer.validated_data["species"]["name"])
         new_confidence = serializer.validated_data["confidence"]
         new_latitude = serializer.validated_data["latitude"]
         new_longitude = serializer.validated_data["longitude"]
@@ -1291,29 +1297,31 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
             new_image = None
 
         if (new_genus != flight.genus):
-            event += f"- Genus changed from {flight.genus} to {new_genus}\n"
+            event += f"Genus changed from {flight.genus} to {new_genus}. "
         if (new_species != flight.species):
-            event += f"- Species changed from {flight.species} to {new_species}\n"
+            event += f"Species changed from {flight.species} to {new_species}. "
         if (new_confidence != flight.confidence):
             confidence_levels = ["low", "high"]
 
             new_level = confidence_levels[new_confidence]
             old_level = confidence_levels[flight.confidence]
-            event += f"- Confidence changed from {old_level} to {new_level}\n"
+            event += f"Confidence changed from {old_level} to {new_level}. "
         if (new_latitude != flight.latitude or new_longitude != flight.longitude):
-            event += f"- Location changed from ({round(flight.latitude,3)}, {round(flight.longitude, 3)}) to ({round(new_latitude, 3)}, {round(new_longitude, 3)})\n"
+            event += f"Location changed from ({round(flight.latitude,3)}, {round(flight.longitude, 3)}) to ({round(new_latitude, 3)}, {round(new_longitude, 3)}). "
         if (new_radius != flight.radius):
-            event += f"- Radius changed from {round(flight.radius, 1)} km to {round(new_radius, 1)} km\n"
+            event += f"Radius changed from {round(flight.radius, 1)} km to {round(new_radius, 1)} km. "
         if (new_date_of_flight != flight.dateOfFlight):
+            print("Old date: {}".format(flight.dateOfFlight))
+            print("New date: {}".format(new_date_of_flight))
             old_date_string = flight.dateOfFlight.strftime("%I:%M %p %Z on %d %b %Y")
             new_date_string = new_date_of_flight.strftime("%I:%M %p %Z on %d %b %Y")
-            event += f"- Date of flight changed from {old_date_string} to {new_date_string}\n"
+            event += f"Date of flight changed from {old_date_string} to {new_date_string}. "
         if (new_size != flight.size):
-            event += f"- Size of flight changed from {flight.size} to {new_size}\n"
+            event += f"Size of flight changed from {flight.size} to {new_size}. "
         if new_image:
-            event += "- Image changed.\n"
+            event += "Image changed. "
         if removed_image:
-            event += "- Image Removed.\n"
+            event += "Image Removed. "
 
         event = event.rstrip()
 

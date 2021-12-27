@@ -96,7 +96,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class FlightSerializer(serializers.ModelSerializer):
     # taxonomy = SpeciesSerializer(source='species')
-    taxonomy = serializers.ReadOnlyField(source='species.id') #NewSpeciesSerializer(source='species')
+    taxonomy = serializers.IntegerField(source='species.id') #NewSpeciesSerializer(source='species')
     comments = CommentSerializer(many=True, read_only=True, required=False)
     owner = serializers.ReadOnlyField(source="owner.username")
     ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
@@ -114,8 +114,15 @@ class FlightSerializer(serializers.ModelSerializer):
     weather = serializers.BooleanField(source='hasWeather', read_only=True)
 
     def update(self, instance, validated_data):
-        instance.genus = Genus.objects.get(name=validated_data["species"]["genus"]["name"])
-        instance.species = Species.objects.get(genus=instance.genus, name=validated_data["species"]["name"])
+
+        new_species = Species.objects.get(pk=validated_data["species"]["id"])
+        new_genus = new_species.genus
+
+        instance.genus = new_genus
+        instance.species = new_species
+
+        # instance.genus = Genus.objects.get(name=validated_data["species"]["genus"]["name"])
+        # instance.species = Species.objects.get(genus=instance.genus, name=validated_data["species"]["name"])
         instance.confidence = validated_data.get("confidence", instance.confidence)
         instance.latitude = validated_data.get("latitude", instance.latitude)
         instance.longitude = validated_data.get("longitude", instance.longitude)

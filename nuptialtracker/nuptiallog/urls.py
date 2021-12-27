@@ -71,7 +71,7 @@ urlpatterns = [
     path('passchange/<str:uidb64>/<str:token>/', views.ChangePasswordForm.as_view(), name="changepass"),
     path('community-standards/', views.communityStandards, name="community_standards"),
     path('about/', views.about, name="about"),
-    path('scientific-advisory-board/', views.scientificAdvisoryBoard, name="scientificAdvisoryBoard"),
+    # path('scientific-advisory-board/', views.scientificAdvisoryBoard, name="scientificAdvisoryBoard"),
     path('media/scientist_pics/<str:filename>', views.ScientistImageView.as_view()),
     path('help/', views.helpView, name="help"),
     path('privacy-policy/', views.privacy, name="privacy"),
@@ -81,6 +81,7 @@ urlpatterns = [
     path('browse?start=<int:start>&offset=<int:offset>', views.browse, name="browse_params"),
     path('app-license/', views.applicense, name="applicense"),
     path('server-license/', views.serverlicense, name="serverlicense"),
+    path('api/taxonomy-version/', views.TaxonomyVersionView.as_view(), name="taxonomy-version"),
     # path('user_management/', include('django.contrib.auth.urls')),
 ]
 
