@@ -447,6 +447,9 @@ class FlightSerializerFull(serializers.ModelSerializer):
 # class FlightSerializerAllNested(serializers)
 
 class TaxonomyVersionSerializer(serializers.ModelSerializer):
+    genus_count = serializers.ReadOnlyField(source="genera.count")
+    species_count = serializers.ReadOnlyField(source="species.count")
+
     class Meta:
         model = Taxonomy
-        fields = ['version']
+        fields = ['version', 'genus_count', 'species_count']

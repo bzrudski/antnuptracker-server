@@ -33,17 +33,14 @@ from rest_framework import filters
 from rest_framework import views
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException, ParseError
-from django_filters import rest_framework as extra_filters
 from PIL import Image
 # from django_filters.rest_framework import DjangoFilterBackend
-import rest_framework
 from .models import Flight, Comment, Changelog, FlightImage, Weather, Role, Device, Genus, Species, ScientificAdvisor
 from .serializers import *
 # from .permissions import IsOwnerOrReadOnly, IsOwner, IsProfessional, IsProfessionalOrReadOnly, IsAuthor, IsAuthorOrReadOnly
 from .permissions import *
 from .weather import get_weather_for_flight
 from .notifications import send_notifications
-from .paginators import BiggerPagesPaginator
 from .faq import getFaqs
 from .parsers import ImageUploadParser
 from .exceptions import BadLocationUrlException
@@ -78,10 +75,10 @@ from django.utils import timezone
 from nuptialtracker.settings import MEDIA_ROOT
 
 from threading import Thread
-import io
-import json
+# import io
+# import json
 import os
-import sys
+# import sys
 
 # Create your views here.
 class GenusListView(APIView):
