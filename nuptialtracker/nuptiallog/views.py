@@ -1101,7 +1101,7 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
         # max_distance = self.request.query_params.get("within")
 
-        user = self.request.query_params.get('u#ser')
+        user = self.request.query_params.get('user')
 
         ordering = self.request.query_params.get('ordering')
 
@@ -1224,11 +1224,20 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
     def create(self, request, format=None):
         serializer = FlightSerializerBarebones(data=self.request.data)
+
+        print("Serializer for new flight:")
+        print(serializer)
+
         user = self.request.user
         date = timezone.now().replace(microsecond=0)
 
         if not serializer.is_valid():
             return Response({"error":"Invalid formatting"}, status=status.HTTP_400_BAD_REQUEST)
+
+        print("Validated Data:")
+        print(serializer.validated_data)
+
+        location = Point(x=serializer.validated_data["location"]['x'], y=serializer.validated_data["location"]['y'], srid=4326)
 
         # print(serializer.validated_data)
         #genusName = serializer.validated_data["genus"]["name"]
@@ -1241,7 +1250,7 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         species = Species.objects.get(id=species_id)
         # print(species)
         genus = species.genus
-        flight = serializer.save(owner=self.request.user, genus=genus, species=species, dateRecorded=date)
+        flight = serializer.save(owner=self.request.user, genus=genus, species=species, dateRecorded=date, location=location, latitude=location.y, longitude=location.x)
 
         weatherThread = Thread(target=get_weather_for_flight, args=(flight, ))
 
@@ -1630,8 +1639,8 @@ class TaxonomyVersionView(APIView):
         serializer = TaxonomyVersionSerializer(taxonomy)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-def welcome(request):
-    return render(request, 'nuptiallog/Welcome.html')
+def welcome(request, update_development=False):
+    return render(request, 'nuptiallog/Welcome.html', {"update_development": update_development})
 
 def about(request):
     return render(request, 'nuptiallog/About.html')

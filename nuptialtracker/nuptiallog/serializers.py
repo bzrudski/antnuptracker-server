@@ -20,6 +20,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import password_validation
+from django.contrib.gis.geos.point import Point
 from django.utils.timezone import datetime
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
@@ -101,10 +102,8 @@ class FlightSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.username")
     ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
 
-    # TO DEPRECATE THESE TWO FIELS... REPLACED BY `ownerRole`
-    ownerProfessional = serializers.BooleanField(source="owner.flightuser.professional", read_only=True)
-    ownerFlagged = serializers.BooleanField(source="owner.flightuser.flagged", read_only=True)
-    # END OF DEPRECATION COMMENT
+    latitude = serializers.FloatField(source='location.y')
+    longitude = serializers.FloatField(source='location.x')
 
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     validatedBy = serializers.ReadOnlyField(source="validatedBy.user.username", allow_null=True)
@@ -124,8 +123,15 @@ class FlightSerializer(serializers.ModelSerializer):
         # instance.genus = Genus.objects.get(name=validated_data["species"]["genus"]["name"])
         # instance.species = Species.objects.get(genus=instance.genus, name=validated_data["species"]["name"])
         instance.confidence = validated_data.get("confidence", instance.confidence)
-        instance.latitude = validated_data.get("latitude", instance.latitude)
-        instance.longitude = validated_data.get("longitude", instance.longitude)
+        latitude = validated_data.get("latitude", instance.point.y)
+        longitude = validated_data.get("longitude", instance.point.x)
+        instance.location = Point(longitude, latitude, srid=4326)
+        
+        # ************ PREPARE TO DEPRECATE **************** #
+        instance.latitude = latitude
+        instance.longitude = longitude
+        # ************ PREPARE TO DEPRECATE **************** #
+
         instance.radius = validated_data.get("radius", instance.radius)
         instance.dateOfFlight = validated_data.get("dateOfFlight", instance.dateOfFlight)
         instance.size = validated_data.get("size", instance.size)
@@ -156,7 +162,7 @@ class FlightSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flight
-        fields = ('flightID', 'taxonomy', 'latitude', 'longitude', 'radius', 'dateOfFlight', 'owner', 'ownerRole', 'ownerProfessional', 'ownerFlagged', 'dateRecorded', 'weather', 'comments', 'hasImage', 'image', 'confidence', 'size', 'validated', 'validatedBy', 'validatedAt')
+        fields = ('flightID', 'taxonomy', 'latitude', 'longitude', 'radius', 'dateOfFlight', 'owner', 'ownerRole', 'dateRecorded', 'weather', 'comments', 'hasImage', 'image', 'confidence', 'size', 'validated', 'validatedBy', 'validatedAt')
         read_only_fields = ('dateRecorded', 'validatedAt')
         extra_kwargs = {
             'dateRecorded': {'required': False},
@@ -172,9 +178,12 @@ class FlightSerializerBarebones(serializers.ModelSerializer):
     lastUpdated = serializers.ReadOnlyField(source='getLastUpdated')
     image = Base64ImageField(required=False, write_only=True)
 
+    latitude = serializers.FloatField(source='location.y')
+    longitude = serializers.FloatField(source='location.x')
+
     class Meta:
         model = Flight
-        fields = ('flightID', 'taxonomy', 'owner', 'ownerRole', 'latitude', 'longitude','radius', 'dateOfFlight', 'image', 'confidence', 'size', 'lastUpdated', 'validated') #, 'dateRecorded',
+        fields = ('flightID', 'taxonomy', 'owner', 'ownerRole', 'latitude', 'longitude', 'radius', 'dateOfFlight', 'image', 'confidence', 'size', 'lastUpdated', 'validated') #, 'dateRecorded',
         extra_kwargs = {
             'radius': {'write_only': True},
             # 'dateRecorded': {'write_only':  True},
@@ -370,6 +379,10 @@ class FlightSerializerExport(serializers.ModelSerializer):
     date_of_flight = serializers.ReadOnlyField(source="dateOfFlight", allow_null=False)
     genus = serializers.CharField(source='species.genus.name')
     species = serializers.CharField(source='species.name')
+
+    latitude = serializers.FloatField(source='location.y')
+    longitude = serializers.FloatField(source='location.x')
+
     comments = CommentSerializer(many=True, read_only=True)
     reported_by = serializers.ReadOnlyField(source="owner.username")
     date_recorded = serializers.ReadOnlyField(source="dateRecorded", allow_null=False)
@@ -423,7 +436,7 @@ class FlightSerializerExport(serializers.ModelSerializer):
 
     class Meta:
         model = Flight
-        fields = ('flightID', 'genus', 'species', 'confidence_level', 'date_of_flight', 'latitude','longitude', 'flight_size', 'reported_by', 'user_professional', 'user_flagged', 'date_recorded', 'validated', 'validated_by', 'validated_at', 'weather', 'comments', 'image')
+        fields = ('flightID', 'genus', 'species', 'confidence_level', 'date_of_flight', 'latitude', 'longitude', 'flight_size', 'reported_by', 'user_professional', 'user_flagged', 'date_recorded', 'validated', 'validated_by', 'validated_at', 'weather', 'comments', 'image')
 
 class FlightSerializerFull(serializers.ModelSerializer):
     genus = serializers.CharField(source='species.genus.name')
@@ -439,6 +452,8 @@ class FlightSerializerFull(serializers.ModelSerializer):
     weather = WeatherSerializer()
     confidence_level = serializers.CharField(source="get_confidence_string")
     flight_size = serializers.CharField(source="get_size_string")
+    latitude = serializers.FloatField(source='location.y')
+    longitude = serializers.FloatField(source='location.x')
 
     class Meta:
         model = Flight

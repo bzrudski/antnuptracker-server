@@ -26,7 +26,7 @@ from .pandasViews import FlightDataExport
 from . import views
 
 urlpatterns = [
-    path('', views.welcome, name="home"),
+    path('', views.welcome, name="home", kwargs={"update_development":True}),
     # To deprecate... See below at API. Keeping for now because client app relies on hardcoded urls
     path('download/', views.download, name="download"),
     path('flights/', views.FlightList.as_view()),
@@ -72,7 +72,7 @@ urlpatterns = [
     path('community-standards/', views.communityStandards, name="community_standards"),
     path('about/', views.about, name="about"),
     # path('scientific-advisory-board/', views.scientificAdvisoryBoard, name="scientificAdvisoryBoard"),
-    path('media/scientist_pics/<str:filename>', views.ScientistImageView.as_view()),
+    # path('media/scientist_pics/<str:filename>', views.ScientistImageView.as_view()),
     path('help/', views.helpView, name="help"),
     path('privacy-policy/', views.privacy, name="privacy"),
     path('terms-and-conditions/', views.terms, name="terms"),

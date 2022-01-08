@@ -15,10 +15,12 @@
     <div id="toolbar">
         <a id="home" href="{% url 'home' %}" class="menubutton">AntNupTracker</a>
         <a id="about" href="{% url 'about' %}" class="menubutton">About</a>
+        {% if not update_development %}
         <a id="browse" href="{% url 'browse' %}" class="menubutton">Flight Records</a>
         <a id="signup" href="{% url 'create-account' %}" class="menubutton">Sign Up</a>
         <a id="reset" href="{% url 'reset-password' %}" class="menubutton">Reset Password</a>
         <a id="download" href="{% url 'download' %}" class="menubutton">Download Data</a>
+        {% endif %}
         {# <a id="scientific" href="{% url 'scientificAdvisoryBoard' %}" class="menubutton">Scientific Advisory Board</a> #}
         <a id="help" href="{% url 'help' %}" class="menubutton">Help</a>
     </div>

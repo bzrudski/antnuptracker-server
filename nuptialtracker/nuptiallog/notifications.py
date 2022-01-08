@@ -40,6 +40,12 @@ def send_notifications(devices, title, body):
         response.failure_count
         ))
 
+    print("Failures: ")
+
+    for send_response in response.responses:
+        if not send_response.success:
+            print(send_response.exception)
+
 # # Payload Generation
 # class IllegalDeviceException(Exception):
 #     pass
