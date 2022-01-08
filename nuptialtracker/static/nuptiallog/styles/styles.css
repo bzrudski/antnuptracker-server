@@ -363,6 +363,8 @@ a.nextprevbutton:hover {
 }
 
 .devnotice {
+    position: relative;
+    margin-top: 20px;
     max-width: 50%;
     background-color: #aa0000;
     color: #ffffff;
