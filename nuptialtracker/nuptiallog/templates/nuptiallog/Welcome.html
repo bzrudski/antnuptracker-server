@@ -30,6 +30,7 @@
         </div>
         <div class="col">
             <img id="flightpic" src="{% static 'nuptiallog/images/nuptialflight.jpg' %}">
+            {% if not update_development %}
             <div class="buttoncontainer">
                 <a class="button" href="{% url 'create-account' %}">
                     Sign up now!
@@ -38,6 +39,7 @@
                     Download the Data!
                 </a>
             </div>
+            {% endif %}
             <a id="appStoreContainer" href="https://apps.apple.com/us/app/id1493362260">
                 <img id="bigAppStoreDownload" src="{% static 'nuptiallog/images/proprietary/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg' %}" alt="Download on App Store" height="72px">
             </a>

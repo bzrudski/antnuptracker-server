@@ -1642,30 +1642,30 @@ class TaxonomyVersionView(APIView):
 def welcome(request, update_development=False):
     return render(request, 'nuptiallog/Welcome.html', {"update_development": update_development})
 
-def about(request):
-    return render(request, 'nuptiallog/About.html')
+def about(request, update_development=False):
+    return render(request, 'nuptiallog/About.html', {"update_development": update_development})
 
-def download(request):
+def download(request, update_development=False):
     formats = ["xlsx", "csv", "json", "xls"]
-    return render(request, 'nuptiallog/DownloadData.html', {"formats":formats})
+    return render(request, 'nuptiallog/DownloadData.html', {"formats":formats, "update_development": update_development})
 
-def communityStandards(request):
-    return render(request, 'nuptiallog/CommunityStandards.html')
+def communityStandards(request, update_development=False):
+    return render(request, 'nuptiallog/CommunityStandards.html', {"update_development": update_development})
 
-def terms(request, mobile=False):
-    return render(request, 'nuptiallog/TermsAndConditions.html', {"mobile":mobile})
+def terms(request, mobile=False, update_development=False):
+    return render(request, 'nuptiallog/TermsAndConditions.html', {"mobile":mobile, "update_development": update_development})
 
-def privacy(request):
-    return render(request, 'nuptiallog/PrivacyPolicy.html')
+def privacy(request, update_development=False):
+    return render(request, 'nuptiallog/PrivacyPolicy.html', {"update_development": update_development})
 
-def scientificAdvisoryBoard(request):
+def scientificAdvisoryBoard(request, update_development=False):
     scientists = ScientificAdvisor.objects.all()
 
-    return render(request, 'nuptiallog/ScientificAdvisoryBoard.html', {"scientists": scientists})
+    return render(request, 'nuptiallog/ScientificAdvisoryBoard.html', {"scientists": scientists, "update_development": update_development})
 
-def helpView(request):
+def helpView(request, update_development=False):
     questions = getFaqs()
-    return render(request, 'nuptiallog/Help.html', {"questions":questions})
+    return render(request, 'nuptiallog/Help.html', {"questions":questions, "update_development": update_development})
 
 def applicense(request):
     # path = sys.path("AntNupTrackerLicense.txt")
@@ -1694,7 +1694,7 @@ def taxonomy(request):
     license.close()
     return HttpResponse(licenseText, content_type="text/plain")
 
-def browse(request, start, offset):
+def browse(request, start, offset, update_development=False):
     allFlights = Flight.objects.order_by('-flightID')
     
     end = start + offset
@@ -1704,4 +1704,4 @@ def browse(request, start, offset):
 
     flights = allFlights[start: end]
 
-    return render(request, 'nuptiallog/Browse.html', {"flights": flights, "next_start":end, "offset":offset, "prev_start":start-offset, "show_next": show_next, "show_prev": show_prev})
+    return render(request, 'nuptiallog/Browse.html', {"flights": flights, "next_start":end, "offset":offset, "prev_start":start-offset, "show_next": show_next, "show_prev": show_prev, "update_development": update_development})

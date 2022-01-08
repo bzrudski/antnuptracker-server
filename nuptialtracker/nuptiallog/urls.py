@@ -25,10 +25,12 @@ from rest_framework_nested import routers
 from .pandasViews import FlightDataExport
 from . import views
 
+update_development = True
+
 urlpatterns = [
-    path('', views.welcome, name="home", kwargs={"update_development":True}),
+    path('', views.welcome, name="home", kwargs={"update_development":update_development}),
     # To deprecate... See below at API. Keeping for now because client app relies on hardcoded urls
-    path('download/', views.download, name="download"),
+    path('download/', views.download, name="download", kwargs={"update_development":update_development}),
     path('flights/', views.FlightList.as_view()),
     path('flights/<int:pk>/', views.FlightDetail.as_view()),
     path('flights/<int:pk>/history/', views.ChangelogForFlight.as_view()),
@@ -65,20 +67,20 @@ urlpatterns = [
     path('api/users/<str:username>/', views.UserDetailView.as_view()),
     path('api/comments/', views.CommentList.as_view()),
     # Non-api views, frontend for website
-    path('create-account/', views.CreateUserForm.as_view(), name="create-account"),
-    path('reset-password/', views.ResetPasswordForm.as_view(), name="reset-password"),
+    path('create-account/', views.CreateUserForm.as_view(), name="create-account", kwargs={"update_development":update_development}),
+    path('reset-password/', views.ResetPasswordForm.as_view(), name="reset-password", kwargs={"update_development":update_development}),
     path('activate/<str:uidb64>/<str:token>/', views.UserActivationView.as_view(), name="activate"),
     path('passchange/<str:uidb64>/<str:token>/', views.ChangePasswordForm.as_view(), name="changepass"),
-    path('community-standards/', views.communityStandards, name="community_standards"),
-    path('about/', views.about, name="about"),
+    path('community-standards/', views.communityStandards, name="community_standards", kwargs={"update_development":update_development}),
+    path('about/', views.about, name="about", kwargs={"update_development":update_development}),
     # path('scientific-advisory-board/', views.scientificAdvisoryBoard, name="scientificAdvisoryBoard"),
     # path('media/scientist_pics/<str:filename>', views.ScientistImageView.as_view()),
-    path('help/', views.helpView, name="help"),
-    path('privacy-policy/', views.privacy, name="privacy"),
-    path('terms-and-conditions/', views.terms, name="terms"),
-    path('taxonomy/', views.taxonomy, name="taxonomy"),
-    path('browse/', views.browse, {"start": 0, "offset": 15}, name="browse"),
-    path('browse?start=<int:start>&offset=<int:offset>', views.browse, name="browse_params"),
+    path('help/', views.helpView, name="help", kwargs={"update_development":update_development}),
+    path('privacy-policy/', views.privacy, name="privacy", kwargs={"update_development":update_development}),
+    path('terms-and-conditions/', views.terms, name="terms", kwargs={"update_development":update_development}),
+    path('taxonomy/', views.taxonomy, name="taxonomy", kwargs={"update_development":update_development}),
+    path('browse/', views.browse, {"start": 0, "offset": 15, "update_development": update_development}, name="browse"),
+    path('browse?start=<int:start>&offset=<int:offset>', views.browse, name="browse_params", kwargs={"update_development":update_development}),
     path('app-license/', views.applicense, name="applicense"),
     path('server-license/', views.serverlicense, name="serverlicense"),
     path('api/taxonomy-version/', views.TaxonomyVersionView.as_view(), name="taxonomy-version"),
