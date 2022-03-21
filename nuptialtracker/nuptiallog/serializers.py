@@ -457,7 +457,7 @@ class FlightSerializerFull(serializers.ModelSerializer):
 
     class Meta:
         model = Flight
-        fields = ('flightID', 'genus', 'species', 'confidence_level', 'dateOfFlight', 'latitude','longitude', 'flight_size', 'reported_by', 'user_professional', 'user_flagged', 'dateRecorded', 'validated', 'validated_by', 'validated_at', 'weather', 'comments', 'image')
+        fields = ('flightID', 'genus', 'species', 'confidence_level', 'dateOfFlight', 'latitude', 'longitude', 'flight_size', 'reported_by', 'user_professional', 'user_flagged', 'dateRecorded', 'validated', 'validated_by', 'validated_at', 'weather', 'comments', 'image')
 
 # class FlightSerializerAllNested(serializers)
 
