@@ -23,7 +23,7 @@ from django.contrib.auth import password_validation
 from django.contrib.gis.geos.point import Point
 from django.utils.timezone import datetime
 from rest_framework import serializers
-from drf_extra_fields.fields import Base64ImageField
+# from drf_extra_fields.fields import Base64ImageField
 from .models import Flight, Comment, FlightImage, FlightUser, Changelog, Taxonomy, Weather, WeatherDescription, BasicWeatherData, DayInfo, WindInfo, RainInfo, Role, Genus, Species
 
 # Define flight serializer
