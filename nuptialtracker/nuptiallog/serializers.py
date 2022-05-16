@@ -108,7 +108,7 @@ class FlightSerializer(serializers.ModelSerializer):
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     validatedBy = serializers.ReadOnlyField(source="validatedBy.user.username", allow_null=True)
     hasImage = serializers.BooleanField(write_only=True, required=False, default=False)
-    image = Base64ImageField(required=False)
+    # image = Base64ImageField(required=False)
 
     weather = serializers.BooleanField(source='hasWeather', read_only=True)
 
@@ -176,7 +176,7 @@ class FlightSerializerBarebones(serializers.ModelSerializer):
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     ownerRole = serializers.ReadOnlyField(source='owner.flightuser.status')
     lastUpdated = serializers.ReadOnlyField(source='getLastUpdated')
-    image = Base64ImageField(required=False, write_only=True)
+    # image = Base64ImageField(required=False, write_only=True)
 
     latitude = serializers.FloatField(source='location.y')
     longitude = serializers.FloatField(source='location.x')
@@ -391,7 +391,7 @@ class FlightSerializerExport(serializers.ModelSerializer):
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     validated_by = serializers.ReadOnlyField(source="validatedBy.username", allow_null=True)
     validated_at = serializers.ReadOnlyField(source="validatedAt", allow_null=True)
-    image = Base64ImageField(required=False)
+    # image = Base64ImageField(required=False)
     weather = FlatWeatherSerializer()
 
     confidence_level = serializers.CharField(source="get_confidence_string")
@@ -448,7 +448,7 @@ class FlightSerializerFull(serializers.ModelSerializer):
     validated = serializers.BooleanField(source="isValidated", read_only=True)
     validated_by = serializers.ReadOnlyField(source="validatedBy.username", allow_null=True)
     validated_at = serializers.ReadOnlyField(source="validatedAt", allow_null=True)
-    image = Base64ImageField(required=False)
+    # image = Base64ImageField(required=False)
     weather = WeatherSerializer()
     confidence_level = serializers.CharField(source="get_confidence_string")
     flight_size = serializers.CharField(source="get_size_string")
