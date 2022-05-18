@@ -18,6 +18,7 @@
 #
 
 from datetime import date
+from typing import final
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db.models import QuerySet, F, Q, Count
@@ -936,24 +937,28 @@ class ResetPasswordForm(generic.FormView):
     def post(self, request, *args, **kwargs):
         form = PasswordResetForm(request.POST)
         if form.is_valid():
-            to_email=form.cleaned_data.get('email')
-            user = User.objects.get(email=to_email)
+            to_email = form.cleaned_data.get('email')
 
-            current_site = get_current_site(request)
-            subject = "Reset NuptialTracker Password"
-            message = render_to_string('nuptiallog/PasswordResetEmail.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid':  urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': passwordResetToken.make_token(user)
-            })
-            email = EmailMessage(subject, message, to=[to_email])
-            email.content_subtype = 'html'
-            # print("Preparing to send e-mail.")
-            email.send()
+            try:
+                user = User.objects.get(email=to_email)
 
-            # print("Sent e-mail")
-            return render(request, self.email_successful, {'user':user, 'mobile': self.mobile}, status=status.HTTP_201_CREATED)
+                current_site = get_current_site(request)
+                subject = "Reset NuptialTracker Password"
+                message = render_to_string('nuptiallog/PasswordResetEmail.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid':  urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': passwordResetToken.make_token(user)
+                })
+                email = EmailMessage(subject, message, to=[to_email])
+                email.content_subtype = 'html'
+                # print("Preparing to send e-mail.")
+                email.send()
+            except:
+                user = None
+            finally:
+                # print("Sent e-mail")
+                return render(request, self.email_successful, {'email':to_email, 'mobile': self.mobile}, status=status.HTTP_201_CREATED)
         else:
             return render(request, self.form_template, {'form':form, 'mobile': self.mobile})
     def get(self, request, *args, **kwargs):
