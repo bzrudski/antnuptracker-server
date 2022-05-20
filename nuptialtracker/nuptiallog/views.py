@@ -18,7 +18,6 @@
 #
 
 from datetime import date
-from typing import final
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db.models import QuerySet, F, Q, Count
