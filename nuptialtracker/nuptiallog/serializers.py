@@ -123,9 +123,15 @@ class FlightSerializer(serializers.ModelSerializer):
         # instance.genus = Genus.objects.get(name=validated_data["species"]["genus"]["name"])
         # instance.species = Species.objects.get(genus=instance.genus, name=validated_data["species"]["name"])
         instance.confidence = validated_data.get("confidence", instance.confidence)
-        latitude = validated_data.get("latitude", instance.location.y)
-        longitude = validated_data.get("longitude", instance.location.x)
-        instance.location = Point(longitude, latitude, srid=4326)
+        
+        new_location = validated_data.get("location", None)
+
+        if new_location is not None:
+            # latitude = validated_data.get("latitude", instance.location.y)
+            # longitude = validated_data.get("longitude", instance.location.x)
+            latitude = new_location["y"]
+            longitude = new_location["x"]
+            instance.location = Point(longitude, latitude, srid=4326)
         
         # ************ PREPARE TO DEPRECATE **************** #
         instance.latitude = latitude
