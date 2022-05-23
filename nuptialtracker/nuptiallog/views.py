@@ -1287,8 +1287,11 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         # new_genus = Genus.objects.get(name=genus_name)
         # new_species = Species.objects.get(genus=new_genus, name=serializer.validated_data["species"]["name"])
         new_confidence = serializer.validated_data["confidence"]
-        new_latitude = serializer.validated_data["latitude"]
-        new_longitude = serializer.validated_data["longitude"]
+        
+        new_location = serializer.validated_data["location"]
+
+        new_latitude = new_location["y"]
+        new_longitude = new_location["x"]
         new_radius = serializer.validated_data["radius"]
         new_date_of_flight = serializer.validated_data["dateOfFlight"]
         new_size = serializer.validated_data["size"]
