@@ -46,6 +46,7 @@ from .parsers import ImageUploadParser
 from .exceptions import BadLocationUrlException
 
 from knox.views import LoginView as KnoxLoginView
+from knox.auth import TokenAuthentication
 from rest_framework.authentication import BasicAuthentication
 
 from rest_framework.views import APIView
@@ -90,6 +91,7 @@ class GenusListView(APIView):
 class GenusViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = Genus.objects.all()
     serializer_class = NewGenusSerializer
+    # permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         serializer = GenusNameIdSerializer(self.queryset, many=True)
@@ -97,11 +99,11 @@ class GenusViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SpeciesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    # permission_classes = [permissions.IsAuthenticated]
+    serializer_class = NewSpeciesSerializer
 
     def get_queryset(self):
         return Species.objects.filter(genus__id=self.kwargs["genus_pk"])
-
-    serializer_class = NewSpeciesSerializer
 
 class TaxonomyView(APIView):
     def get(self, request, *args, **kwargs):
@@ -124,323 +126,6 @@ class SpeciesDetailView(APIView):
             return Response({"species":speciesList}, status=status.HTTP_200_OK)
         except:
             return Response("Invalid genus", status=status.HTTP_404_NOT_FOUND)
-
-class FlightList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    # queryset = Flight.objects.all().order_by('-dateRecorded')
-    serializer_class = FlightSerializerBarebones
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    # ordering = ['-dateRecorded']
-
-    def get_queryset(self):
-        queryset = Flight.objects.all().order_by('-dateRecorded')
-
-        genus = self.request.query_params.get('genus', None)
-        if genus != None:
-            queryset = queryset.filter(genus__name=genus)
-
-            species = self.request.query_params.get('species', None)
-            if species != None:
-                queryset = queryset.filter(species__name=species)
-
-        return queryset
-
-    def generate_notification_body(self, flight):
-        return f"A new {flight.genus.name} {flight.species.name} flight (id {flight.flightID}) has been recorded by {flight.owner.username}."
-
-    def notify_users(self, flight):
-        body = self.generate_notification_body(flight)
-        species = flight.species
-        users = species.flightuser_set.all()
-        devices = Device.objects.filter(user__flightuser__in=users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=flight.owner).values_list('deviceToken', flat=True)
-
-        title = "Flight Created"
-
-        # sendAllNotifications("Flight Created", body, devices, flightID=flight.flightID)
-        send_notifications(devices=devices, title=title, body=body)
-
-    def perform_create(self, serializer):
-        user = self.request.user
-        date = timezone.now().replace(microsecond=0)
-        # print(serializer.validated_data)
-        #genusName = serializer.validated_data["genus"]["name"]
-        # genus = Genus.objects.get(name=genusName)
-        genusName = serializer.validated_data["species"]["genus"]["name"]
-        genus = Genus.objects.get(name=genusName)
-        speciesName = serializer.validated_data["species"]["name"]
-        species = Species.objects.get(genus=genus, name=speciesName)
-        flight = serializer.save(owner=self.request.user, genus=genus, species=species, dateRecorded=date)
-
-        weatherThread = Thread(target=get_weather_for_flight, args=(flight, ))
-
-        weatherThread.start()
-
-        notificationThread = Thread(target=self.notify_users, args=[flight])
-        notificationThread.start()
-
-        #getWeatherForFlight(flight)
-        event = "Flight created."
-
-        Changelog.objects.create(user=user, date=date, flight=flight, event=event)
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-class FlightDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
-    queryset = Flight.objects.all()
-    serializer_class = FlightSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
-
-    def generate_changelog(self, serializer):
-        # print("Starting changelog")
-        flight = self.get_object()
-        user = self.request.user
-        date = timezone.now().replace(microsecond=0)
-
-        events = []
-        #hasChanged=False
-
-        print(serializer.validated_data)
-
-        genus_name = serializer.validated_data["species"]["genus"]["name"]
-        new_genus = Genus.objects.get(name=genus_name)
-        new_species = Species.objects.get(genus=new_genus, name=serializer.validated_data["species"]["name"])
-        new_confidence = serializer.validated_data["confidence"]
-        new_latitude = serializer.validated_data["latitude"]
-        new_longitude = serializer.validated_data["longitude"]
-        new_radius = serializer.validated_data["radius"]
-        new_date_of_flight = serializer.validated_data["dateOfFlight"]
-        new_size = serializer.validated_data["size"]
-        new_image = None
-
-        removed_image = False
-
-        # try:
-        #     newImage = serializer.validated_data["image"]
-        # except:
-        #     newImage = None
-    
-        if (serializer.validated_data["hasImage"]):
-            try:
-                new_image = serializer.validated_data["image"]
-            except:
-                new_image = None
-        else:
-            if flight.image:
-                flight.image.delete()
-                removed_image = True
-            new_image = None
-
-        if (new_genus != flight.genus):
-            events.append(f"- Genus changed from {flight.genus} to {new_genus}")
-        if (new_species != flight.species):
-            events.append(f"- Species changed from {flight.species} to {new_species}")
-        if (new_confidence != flight.confidence):
-            confidenceLevels = ["low", "high"]
-
-            newLevel = confidenceLevels[new_confidence]
-            oldLevel = confidenceLevels[flight.confidence]
-            events.append(f"- Confidence changed from {oldLevel} to {newLevel}")
-        if (new_latitude != flight.latitude or new_longitude != flight.longitude):
-            events.append(f"- Location changed from ({round(flight.latitude,3)}, {round(flight.longitude, 3)}) to ({round(new_latitude, 3)}, {round(new_longitude, 3)})")
-        if (new_radius != flight.radius):
-            events.append(f"- Radius changed from {round(flight.radius, 1)} km to {round(new_radius, 1)} km")
-        if (new_date_of_flight != flight.dateOfFlight):
-            oldDateString = flight.dateOfFlight.strftime("%I:%M %p %Z on %d %b %Y")
-            newDateString = new_date_of_flight.strftime("%I:%M %p %Z on %d %b %Y")
-            events.append(f"- Date of flight changed from {oldDateString} to {newDateString}")
-        if (new_size != flight.size):
-            events.append(f"- Size of flight changed from {flight.size} to {new_size}")
-        if new_image:
-            events.append("- Image changed.")
-        if removed_image:
-            events.append("- Image Removed.")
-
-        event = "\n".join(events).strip()
-
-        if (event == ""):
-            return
-
-        Changelog.objects.create(user=user, flight=flight, event=event, date=date)
-        # print("Done changelog")
-
-    def generate_notification_body(self):
-        flight = self.get_object()
-        return f"A {flight.genus.name} {flight.species.name} flight (id {flight.flightID}) has been updated by {flight.owner.username}"
-
-    def notify_users(self):
-        body = self.generate_notification_body()
-        flight = self.get_object()
-        species = flight.species
-        flightID = flight.flightID
-        owner = flight.owner
-        users = species.flightuser_set.all()
-        devices = Device.objects.filter(user__flightuser__in=users).exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).exclude(user=owner).values_list('deviceToken', flat=True)
-
-        title = "Flight Edited"
-
-        # sendAllNotifications("Flight Edited", body, devices, flightID=flightID)
-        send_notifications(devices=devices, title=title, body=body)
-
-    def perform_update(self, serializer):
-        self.generate_changelog(serializer)
-
-        serializer.save()
-
-        notificationThread = Thread(target=self.notify_users, args=[])
-        notificationThread.start()
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    # def delete(self, request, *args, **kwargs):
-    #     return self.destroy(request, *args, **kwargs)
-
-class ValidateFlight(APIView):
-    permission_classes = [IsProfessional]
-
-    def notify_user(self, request, flightID):
-        f = Flight.objects.get(pk=flightID)
-        taxonomy = str(f.species)
-        u = f.owner
-        devices = u.devices.exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).values_list('deviceToken', flat=True)
-
-        title = "Flight Verified"
-        body = f"Your {taxonomy} flight (id {flightID}) has been verified by {self.request.user.username}."
-
-        # sendAllNotifications(title, body, devices, flightID=flightID)
-        send_notifications(devices=devices, title=title, body=body)
-
-    def get(self, request, pk):
-        try:
-            f = Flight.objects.get(pk=pk)
-            if f.isValidated() :
-                response = {"validated": True}
-            else :
-                response = {"validated": False}
-            return Response(response, status=status.HTTP_200_OK)
-        except Flight.DoesNotExist:
-            return Response("No flight with that id.", status=status.HTTP_404_NOT_FOUND)
-
-    def post(self, request, pk):
-        try:
-            f = Flight.objects.get(pk=pk)
-            if f.isValidated():
-                return HttpResponse("Flight already verified.", status=status.HTTP_200_OK)
-            f.validatedBy = request.user.flightuser
-            f.save()
-            timeOfValidation = timezone.now().replace(microsecond=0)
-            f.validatedAt = timeOfValidation
-            f.save()
-
-            Changelog.objects.create(user=request.user, flight=f, event=f"Flight verified by {request.user.username}.", date=timeOfValidation)
-
-            notificationThread = Thread(target=self.notify_user, args=[request, pk])
-            notificationThread.start()
-
-            return Response("Flight verified.", status=status.HTTP_200_OK)
-        except Flight.DoesNotExist:
-            return Response("No flight with that id.", status=status.HTTP_404_NOT_FOUND)
-
-class ValidateInvalidateFlight(APIView):
-    permission_classes = [IsProfessionalOrReadOnly]
-
-    def notify_user(self, request, flightID, validated):
-        f = Flight.objects.get(pk=flightID)
-        taxonomy = str(f.species)
-        u = f.owner
-        devices = u.devices.exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).values_list('deviceToken', flat=True)
-
-        if validated:
-            title = "Flight Verified"
-            body = f"Your {taxonomy} flight (id {flightID}) has been verified by {self.request.user.username}."
-        else:
-            title = "Flight Unverified"
-            body = f"Your {taxonomy} flight (id {flightID}) has been unverified by {self.request.user.username}."
-
-        # sendAllNotifications(title, body, devices, flightID=flightID)
-        send_notifications(devices=devices, title=title, body=body)
-
-    def get(self, request, pk):
-        flight = Flight.objects.get(pk=pk)
-
-        if flight.validatedBy:
-            username = flight.validatedBy.user.username
-        else:
-            username = None
-
-        data = {
-            "flightID"  : pk,
-            "validated" : flight.isValidated(),
-            "validatedBy":  username,
-            "validatedAt":  flight.validatedAt
-        }
-        serializer = FlightValidationSerializer(data=data)
-
-        if (serializer.is_valid()):
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def post(self, request, pk):
-        serializer = FlightValidationSerializer(data=request.data)
-
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        flightID = serializer.validated_data["flightID"]
-
-        if flightID != pk:
-            return Response({"Errors": "Incorrect flight ID"}, status=status.HTTP_400_BAD_REQUEST)
-
-        flight = Flight.objects.get(pk=pk)
-
-        validate = serializer.validated_data["validate"]
-
-        if validate:
-            flight.validatedBy = request.user.flightuser
-            timeOfValidation = timezone.now().replace(microsecond=0)
-            flight.validatedAt = timeOfValidation
-
-            flight.save()
-
-            Changelog.objects.create(user=request.user, flight=flight, event=f"Flight verified by {request.user.username}.", date=timeOfValidation)
-
-        else:
-            flight.validatedBy = None
-            flight.validatedAt = None
-
-            flight.save()
-
-            Changelog.objects.create(user=request.user, flight=flight, event=f"Flight unverified by {request.user.username}.", date=timezone.now().replace(microsecond=0))
-
-        notificationThread = Thread(target=self.notify_user, args=[request, pk, validate])
-        notificationThread.start()
-
-        if flight.isValidated():
-            username = flight.validatedBy.user.username
-        else:
-            username = None
-
-        data = {
-            "flightID"  : pk,
-            "validated" : flight.isValidated(),
-            "validatedBy":  username,
-            "validatedAt":  flight.validatedAt
-        }
-
-        responseSerializer = FlightValidationSerializer(data=data)
-
-        if (responseSerializer.is_valid()):
-            return Response(responseSerializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(responseSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class MyFlightsList(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = FlightSerializerBarebones
@@ -578,6 +263,9 @@ class UpdateMySpeciesList(APIView):
 
 
 class ImageView(APIView):
+    permission_classes = [permissions.IsAuthenticated,]
+    authentication_classes = [TokenAuthentication]
+
     def get(self, request, filename):
         # print(filename)
         path = str(MEDIA_ROOT) + "/flight_pics/" + filename
@@ -591,61 +279,12 @@ class ImageView(APIView):
         else:
             return Response("No such image", status=status.HTTP_404_NOT_FOUND)
 
-class CommentList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def notify_user(self, author, flight):
-        flightID = flight.flightID
-        taxonomy = str(flight.species)
-        u = flight.owner
-        devices = u.devices.exclude(deviceToken='').exclude(authToken=None).exclude(authToken__expiry__lte=timezone.now()).values_list('deviceToken', flat=True)
-
-        title = "New Comment"
-        body = f"{author.username} has left a new comment on your {taxonomy} flight (id {flightID})."
-
-        # sendAllNotifications(title, body, devices, flightID=flightID)
-        send_notifications(devices=devices, title=title, body=body)
-
-    def perform_create(self, serializer):
-        # print(serializer.validated_data)
-        #author = User.objects.get(username=serializer.validated_data["author"])
-        text = serializer.validated_data["text"]
-        flightID = serializer.validated_data["responseTo"]["flightID"]
-        responseTo = Flight.objects.get(pk=flightID)
-        author = self.request.user
-        time = timezone.now().replace(microsecond=0) #serializer.validated_data["time"]
-
-        comment = Comment.objects.create(author=author, text=text, responseTo=responseTo, time=time)
-
-        if (author == responseTo.owner):
-            return
-
-        notificationThread = Thread(target=self.notify_user, args=[author, responseTo])
-        notificationThread.start()
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-class CommentDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.GenericAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [IsOwnerOrReadOnly]
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
 
 class ChangelogForFlight(mixins.ListModelMixin, generics.GenericAPIView):
     #queryset = Changelog.objects.all()
     serializer_class = ChangelogSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
     lookup_field = "flightID"
     lookup_url_kwarg = "pk"
 
@@ -659,6 +298,7 @@ class WeatherForFlight(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = WeatherSerializer
     lookup_field = "flight_id"
     lookup_url_kwarg = "pk"
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -678,12 +318,6 @@ class WeatherForFlight(mixins.RetrieveModelMixin, generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
-class UserListView(mixins.ListModelMixin, generics.GenericAPIView):
-    queryset = FlightUser.objects.all()
-    serializer_class = FlightUserSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
 
 class LoginView(KnoxLoginView):
     authentication_classes = [BasicAuthentication]
@@ -1022,6 +656,7 @@ class UserDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = FlightUserSerializer
     lookup_field = "user__username"
     lookup_url_kwarg = "username"
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return FlightUser.objects.all().filter(user__username=self.kwargs["username"])
@@ -1032,6 +667,8 @@ class UserDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
 class FlightListNested(APIView):
     serializer_class = FlightSerializerFull
     renderer_classes = [JSONRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [BasicAuthentication]
 
     def get_data(self):
         flights = Flight.objects.all()
@@ -1077,7 +714,7 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
     def get_permissions(self):
         if self.action == 'create':
-            return [permissions.IsAuthenticatedOrReadOnly()]
+            return [permissions.IsAuthenticated()]
             
         if self.action == 'verify':
             return [IsProfessionalOrReadOnly()]
@@ -1642,6 +1279,8 @@ class FlightImageViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.
 
 class TaxonomyVersionView(APIView):
 
+    # permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         taxonomy = Taxonomy.objects.last()
         serializer = TaxonomyVersionSerializer(taxonomy)
@@ -1702,14 +1341,14 @@ def taxonomy(request):
     license.close()
     return HttpResponse(licenseText, content_type="text/plain")
 
-def browse(request, start, offset, update_development=False):
-    allFlights = Flight.objects.order_by('-flightID')
+# def browse(request, start, offset, update_development=False):
+#     allFlights = Flight.objects.order_by('-flightID')
     
-    end = start + offset
+#     end = start + offset
 
-    show_next = end <= len(allFlights) + 1
-    show_prev = start - offset >= 0
+#     show_next = end <= len(allFlights) + 1
+#     show_prev = start - offset >= 0
 
-    flights = allFlights[start: end]
+#     flights = allFlights[start: end]
 
-    return render(request, 'nuptiallog/Browse.html', {"flights": flights, "next_start":end, "offset":offset, "prev_start":start-offset, "show_next": show_next, "show_prev": show_prev, "update_development": update_development})
+#     return render(request, 'nuptiallog/Browse.html', {"flights": flights, "next_start":end, "offset":offset, "prev_start":start-offset, "show_next": show_next, "show_prev": show_prev, "update_development": update_development})

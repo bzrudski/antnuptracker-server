@@ -15,11 +15,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# 
+#
 
 from rest_framework import permissions
 from django.contrib.auth.models import AnonymousUser
-from .models import Flight, Role
+from .models import Flight
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
@@ -27,9 +27,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     of an object (comment) to modify and remove it.
     """
     def has_object_permission(self, request, view, obj):
+        if isinstance(request.user, AnonymousUser):
+            return False
+
         if request.method in permissions.SAFE_METHODS:
             return True
-        
+
         return obj.owner == request.user
 
 class IsOwner(permissions.BasePermission):
@@ -70,7 +73,7 @@ class IsProfessional(permissions.BasePermission):
         return request.user.flightuser.professional
 
     def has_permission(self, request, view):
-        if request.auth == None:
+        if request.auth is None:
             return False
 
         return request.user.flightuser.professional
@@ -82,19 +85,22 @@ class IsProfessionalOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        if isinstance(request.user, AnonymousUser):
+            return False
+
         if request.method in permissions.SAFE_METHODS:
             return True
-
-        if request.user is AnonymousUser:
-            return False
 
         return request.user.flightuser.professional
 
     def has_permission(self, request, view):
+        if isinstance(request.user, AnonymousUser):
+            return False
+
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        if request.auth == None:
+        if request.auth is None:
             return False
 
         return request.user.flightuser.professional
@@ -105,9 +111,12 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
     of an object (comment) to modify and remove it.
     """
     def has_object_permission(self, request, view, obj):
+        if isinstance(request.user, AnonymousUser):
+            return False
+
         if request.method in permissions.SAFE_METHODS:
             return True
-        
+
         return obj.author == request.user
 
 class IsAuthor(permissions.BasePermission):
@@ -128,6 +137,9 @@ class IsFlightOwnerOrReadOnly(permissions.BasePermission):
         super().__init__()
 
     def has_permission(self, request, view):
+        if isinstance(request.user, AnonymousUser):
+            return False
+
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -137,6 +149,9 @@ class IsFlightOwnerOrReadOnly(permissions.BasePermission):
         return has_permission
 
     def has_object_permission(self, request, view, obj):
+        if isinstance(request.user, AnonymousUser):
+            return False
+
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -152,6 +167,9 @@ class IsImageOwnerOrReadOnly(permissions.BasePermission):
     of an object (flight image) to modify and remove it.
     """
     def has_object_permission(self, request, view, obj):
+        if isinstance(request.user, AnonymousUser):
+            return False
+
         if request.method in permissions.SAFE_METHODS:
             return True
 
