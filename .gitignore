@@ -14,3 +14,9 @@ TermsAndConditions.html
 PrivacyPolicy.html
 env/
 nuptialtracker/media/scientist_pics/*
+req.txt
+nuptialtracker/private_keys/*
+nuptialtracker/nuptiallog/0015_alter_flight_location.py
+nuptialtracker/nuptiallog/0013_flightimage.py
+nuptialtracker/nuptialtracker/workspace.code-workspace
+requirements2.txt

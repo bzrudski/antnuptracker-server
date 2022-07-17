@@ -15,15 +15,24 @@
     <div id="toolbar">
         <a id="home" href="{% url 'home' %}" class="menubutton">AntNupTracker</a>
         <a id="about" href="{% url 'about' %}" class="menubutton">About</a>
-        <a id="browse" href="{% url 'browse' %}" class="menubutton">Flight Records</a>
+        {% if not update_development %}
         <a id="signup" href="{% url 'create-account' %}" class="menubutton">Sign Up</a>
         <a id="reset" href="{% url 'reset-password' %}" class="menubutton">Reset Password</a>
         <a id="download" href="{% url 'download' %}" class="menubutton">Download Data</a>
-        <a id="scientific" href="{% url 'scientificAdvisoryBoard' %}" class="menubutton">Scientific Advisory Board</a>
+        {% endif %}
+        {# <a id="scientific" href="{% url 'scientificAdvisoryBoard' %}" class="menubutton">Scientific Advisory Board</a> #}
         <a id="help" href="{% url 'help' %}" class="menubutton">Help</a>
     </div>
     {% endif %}
     {% endblock %}
+
+    {% if update_development %}
+    <div class="devnotice">
+        Due to ongoing app updates and server changes, some of the functionality of our website is currently limited. Please check our <a href="https://www.facebook.com/antnuptracker">Facebook Page</a> for more details.
+        <br><br>
+        Thank you for your patience. We are looking forward to our upcoming release!
+    </div>
+    {% endif %}
 
     {% block content %}
 
@@ -43,7 +52,7 @@
         <br>
         For questions, feel free to contact us at <a href="mailto:nuptialtracker@gmail.com">nuptialtracker@gmail.com</a>.
         <br>
-        Copyright Abouheif Lab, 2020
+        Copyright Abouheif Lab, 2020-2022
         <br>
         Developed by Benjamin Rudski
         <br>

@@ -362,6 +362,21 @@ a.nextprevbutton:hover {
     margin-right: auto;
 }
 
+.devnotice {
+    position: relative;
+    margin-top: 20px;
+    max-width: 50%;
+    background-color: #aa0000;
+    color: #ffffff;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+}
+
+.devnotice a {
+    color: aqua;
+}
+
 #toolbar{
     position: relative;
     color: white;
