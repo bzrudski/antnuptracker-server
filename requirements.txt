@@ -10,18 +10,17 @@ django-rest-knox==4.1.0
 djangorestframework==3.12.4
 drf-nested-routers==0.93.3
 firebase-admin==5.0.2
-httpie==2.1.0
 httplib2==0.19.1
-idna==2.9
-numpy==1.18.4
 openpyxl==3.0.3
+httpie==3.1.0
+idna==2.9
+numpy==1.22.0
 pandas==1.0.3
-Pillow==8.2.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
 Pygments==2.7.4
-PyJWT==1.7.1
+PyJWT==2.4.0
 python-dateutil==2.8.1
 python-dotenv==0.13.0
 pytz==2020.1
@@ -33,3 +32,4 @@ six==1.14.0
 sqlparse==0.3.1
 uritemplate==3.0.1
 urllib3==1.25.9
+Pillow==9.0.1
