@@ -17,8 +17,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
-from django.db import models
+# from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.gis.db import models
 from knox.models import AuthToken
 from random import randint
 from django.db.models import signals
@@ -36,6 +37,7 @@ class Flight(models.Model):
     dateRecorded = models.DateTimeField('date recorded')
     latitude = models.FloatField()#max_digits=11,decimal_places=8)
     longitude = models.FloatField()#max_digits=11,decimal_places=8)
+    location = models.PointField(blank=True, null=True, default=None)
     radius = models.FloatField('radius of location approximation (km)', default=0.0)
 
     SIZE_OPTIONS = [
@@ -50,7 +52,7 @@ class Flight(models.Model):
     ]
     confidence = models.IntegerField('Species confidence level', choices=CONFIDENCE_CHOICES, null=True, blank=True)
     image = models.ImageField(upload_to='flight_pics', null=True, blank=True)
-    
+
     validatedBy = models.ForeignKey('FlightUser', related_name='validatedFlights', on_delete=models.SET_NULL, blank=True, null=True)
     validatedAt = models.DateTimeField('date of validation', null=True, blank=True)
 
@@ -104,6 +106,12 @@ class Flight(models.Model):
 
         return f"({self.latitude:.3f}\u00b0{latCoord}, {self.longitude:.2f}\u00b0{lonCoord})"
 
+class FlightImage(models.Model):
+    flight = models.ForeignKey('Flight', on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to="flight_pics/")
+    created_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    date_created = models.DateTimeField()
+
 class Comment(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     text = models.TextField()
@@ -123,7 +131,7 @@ class Genus(models.Model):
         return self.name
 
 class Species(models.Model):
-    name = models.CharField(max_length = 50)
+    name = models.CharField(max_length=50)
     genus = models.ForeignKey('Genus', on_delete=models.CASCADE, related_name='species')
 
     def __str__(self):
@@ -194,7 +202,7 @@ class Device(models.Model):
     ]
     platform = models.CharField(max_length=10, choices=OS_CHOICES)
     model = models.CharField(max_length=64)
-    deviceToken = models.CharField(max_length=65, null=True, blank=True)
+    deviceToken = models.CharField(max_length=200, blank=True, default="")
     authToken = models.OneToOneField(AuthToken, on_delete=models.SET_NULL, null=True, blank=True)
     lastLoggedIn = models.DateTimeField('last logged in')
     active = models.BooleanField(default=True)
@@ -274,3 +282,9 @@ class ScientificAdvisor(models.Model):
     position = models.CharField(max_length=125)
     image = models.ImageField(upload_to="scientist_pics")
     url = models.URLField(blank=True)
+
+class Taxonomy(models.Model):
+    version = models.BigAutoField(primary_key=True)
+    updated = models.DateTimeField()
+    genera = models.ManyToManyField('Genus')
+    species = models.ManyToManyField('Species')

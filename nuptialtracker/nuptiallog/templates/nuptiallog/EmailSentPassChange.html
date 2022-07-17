@@ -4,6 +4,8 @@
 {% block content %}
     <h1>Reset AntNupTracker Account Password</h1>
     <div class="textbody">
-        <p>An e-mail was just sent to <a href="mailto:{{user.email}}">{{ user.email }}</a>. Click on the link to reset your <b>AntNupTracker</b> password.</p>
+        <p>We just sent an e-mail to <a href="mailto:{{email}}">{{ email }}</a> if this is associated with your account. Click on the link to reset your <b>AntNupTracker</b> password.</p>
+
+        <p>If you didn't get an e-mail, please make sure that you entered the right address for your account.</p>
     </div>
 {% endblock content %}

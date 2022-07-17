@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'rest_framework',
     'knox',
     'nuptiallog.apps.NuptiallogConfig',
@@ -108,8 +109,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES'   : (
         'knox.auth.TokenAuthentication',
     ),
-   'DEFAULT_PAGINATION_CLASS'  :   'rest_framework.pagination.LimitOffsetPagination',
-   'PAGE_SIZE'    :    15,
+#    'DEFAULT_PAGINATION_CLASS'  :   'rest_framework.pagination.LimitOffsetPagination',
+#    'PAGE_SIZE'    :    15,
 }
 
 REST_KNOX = {
@@ -166,7 +167,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

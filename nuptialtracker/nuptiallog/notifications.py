@@ -17,147 +17,167 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
-import requests
-import json
+from firebase_admin import messaging
 from .models import Device
-from .authToken import getToken
+from .firebase import default_app as FirebaseApp
 
-# import pycurl # -- If you have pycurl built with NGHTTP2, then you can use pycurl
-from subprocess import run, PIPE
-import os
+def send_notifications(devices, title, body):
 
-# Payload Generation
-class IllegalDeviceException(Exception):
-    pass
+    tokens = [token for token in devices]
 
-def generatePayload(deviceType, body, title, flightID=None):
-    """
-    Create the notification payload.
+    print(tokens)
 
-    Parameters:
-        - deviceType: String representing the type of device.
-                      Acceptable values are "IOS", "ANDROID".
-                      If none of above, IllegalDeviceException is raised.
+    message = messaging.MulticastMessage(
+        tokens=tokens,
+        notification=messaging.Notification(title=title, body=body)
+    )
 
-        - body:       Notification body.
+    response = messaging.send_multicast(message)
+
+    print("{} devices: {} success + {} failure".format(
+        len(devices),
+        response.success_count,
+        response.failure_count
+        ))
+
+    print("Failures: ")
+
+    for send_response in response.responses:
+        if not send_response.success:
+            print(send_response.exception)
+
+# # Payload Generation
+# class IllegalDeviceException(Exception):
+#     pass
+
+# def generatePayload(deviceType, body, title, flightID=None):
+#     """
+#     Create the notification payload.
+
+#     Parameters:
+#         - deviceType: String representing the type of device.
+#                       Acceptable values are "IOS", "ANDROID".
+#                       If none of above, IllegalDeviceException is raised.
+
+#         - body:       Notification body.
         
-        - title:      Notification title.
+#         - title:      Notification title.
 
-    Returns:
-        - JSON representation of the notification payload.
+#     Returns:
+#         - JSON representation of the notification payload.
 
-    Raises:
-        - IllegalDeviceException if the deviceType is not a permitted
-          value.
-    """
-    if (deviceType == "IOS"):
-        return generateIosPayload(body, title, flightID=flightID)
-    elif (deviceType == "ANDROID"):
-        return generateAndroidPayload(body, title, flightID=flightID)
-    else:
-        raise IllegalDeviceException("Device type is not a legal option")
+#     Raises:
+#         - IllegalDeviceException if the deviceType is not a permitted
+#           value.
+#     """
+#     if (deviceType == "IOS"):
+#         return generateIosPayload(body, title, flightID=flightID)
+#     elif (deviceType == "ANDROID"):
+#         return generateAndroidPayload(body, title, flightID=flightID)
+#     else:
+#         raise IllegalDeviceException("Device type is not a legal option")
 
-def generateIosPayload(body, title, flightID=None):
-    payload = {
-        "aps"   :   {
-            "category" :    "FLIGHT_CHANGE",
-            "alert"    :    {
-                "title" :   title,
-                "body"  :   body,
-            },
-            "sound"    : "default",
-        },
-    }
+# def generateIosPayload(body, title, flightID=None):
+#     payload = {
+#         "aps"   :   {
+#             "category" :    "FLIGHT_CHANGE",
+#             "alert"    :    {
+#                 "title" :   title,
+#                 "body"  :   body,
+#             },
+#             "sound"    : "default",
+#         },
+#     }
 
-    if flightID:
-        payload["FLIGHT_ID"] = flightID
+#     if flightID:
+#         payload["FLIGHT_ID"] = flightID
 
-    topic = os.getenv("APNS_TOPIC")
+#     topic = os.getenv("APNS_TOPIC")
 
-    return (topic, json.dumps(payload))
+#     return (topic, json.dumps(payload))
 
-def generateAndroidPayload(body, title, flightID=None):
-    pass
+# def generateAndroidPayload(body, title, flightID=None):
+#     pass
 
-def generateHeader(topic, token):
-    return {"apns-topic":topic, "Authorization": "Bearer " + token, "Content-Type" : "application/json"}
+# def generateHeader(topic, token):
+#     return {"apns-topic":topic, "Authorization": "Bearer " + token, "Content-Type" : "application/json"}
 
-# Notification token generation
-def generateNotificationToken():
-    return getToken()
+# # Notification token generation
+# def generateNotificationToken():
+#     return getToken()
 
-# Notification sending
-def sendNotification(topic, content, deviceToken, authToken, development=True):
-    if (development):
-        url = "https://api.sandbox.push.apple.com:443/3/device/" + deviceToken
-    else:
-        url = "https://api.push.apple.com:443/3/device/" + deviceToken
-    headers = generateHeader(topic, authToken)
-    headerArr = []
+# # Notification sending
+# def sendNotification(topic, content, deviceToken, authToken, development=True):
+#     if (development):
+#         url = "https://api.sandbox.push.apple.com:443/3/device/" + deviceToken
+#     else:
+#         url = "https://api.push.apple.com:443/3/device/" + deviceToken
+#     headers = generateHeader(topic, authToken)
+#     headerArr = []
 
-    for header in headers.keys():
-        headerString = f"{header}:{headers[header]}"
-        headerArr.append(headerString)
+#     for header in headers.keys():
+#         headerString = f"{header}:{headers[header]}"
+#         headerArr.append(headerString)
 
-    # curl.setopt(pycurl.POSTFIELDS, content)
-    # curl.setopt(pycurl.HTTPHEADER, headerArr)
-    # curl.setopt(pycurl.URL, url)
+#     # curl.setopt(pycurl.POSTFIELDS, content)
+#     # curl.setopt(pycurl.HTTPHEADER, headerArr)
+#     # curl.setopt(pycurl.URL, url)
 
-    # curl.perform()
+#     # curl.perform()
 
-    curlexec = os.getenv("CURLPATH") + "/curl"
-    args = [curlexec, "--http2"]
-    for header in headerArr:
-        args.extend(["-H", header])
-    # args.extend(headerArr)
-    args.extend(["-d", content])
-    args.append(url)
-    args.extend(["-w", "\n%{response_code}"])
+#     curlexec = os.getenv("CURLPATH") + "/curl"
+#     args = [curlexec, "--http2"]
+#     for header in headerArr:
+#         args.extend(["-H", header])
+#     # args.extend(headerArr)
+#     args.extend(["-d", content])
+#     args.append(url)
+#     args.extend(["-w", "\n%{response_code}"])
 
-    # print(args)
+#     # print(args)
 
-    p = run(args, stdout=PIPE, stderr=PIPE)
+#     p = run(args, stdout=PIPE, stderr=PIPE)
 
-    # print(p.stdout)
+#     # print(p.stdout)
 
-    return int(p.stdout.split(b'\n')[-1])
+#     return int(p.stdout.split(b'\n')[-1])
 
-    # return curl.getinfo(pycurl.HTTP_CODE)
+#     # return curl.getinfo(pycurl.HTTP_CODE)
 
-def sendAllNotifications(title, body, devices, development=True, flightID=None):
-    # devices = Device.objects.all().filter(active=True)
-    totalDevices = 0
-    totalSent = 0
-    successes = 0
-    failures = 0
+# def sendAllNotifications(title, body, devices, development=True, flightID=None):
+#     # devices = Device.objects.all().filter(active=True)
+#     totalDevices = 0
+#     totalSent = 0
+#     successes = 0
+#     failures = 0
 
-    # c = pycurl.Curl()
-    # c.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_2_0)
+#     # c = pycurl.Curl()
+#     # c.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_2_0)
 
-    authToken = getToken()
+#     authToken = getToken()
 
-    topic, content = generatePayload("IOS", body, title, flightID=flightID)
+#     topic, content = generatePayload("IOS", body, title, flightID=flightID)
 
-    for device in devices:
-        totalDevices += 1
-        if (device.deviceToken != "None"):
-            # topic, content = generatePayload(device.platform, body, title)
-            totalSent += 1
-            response_code = sendNotification(topic, content, device.deviceToken, authToken, development=development)
+#     for device in devices:
+#         totalDevices += 1
+#         if (device.deviceToken != "None"):
+#             # topic, content = generatePayload(device.platform, body, title)
+#             totalSent += 1
+#             response_code = sendNotification(topic, content, device.deviceToken, authToken, development=development)
 
-            if (response_code == 200):
-                successes += 1
-            else:
-                failures += 1
+#             if (response_code == 200):
+#                 successes += 1
+#             else:
+#                 failures += 1
 
-    # c.close()
+#     # c.close()
 
-    resultDict = {
-            "totalDevices":totalDevices,
-            "totalSent":totalSent,
-            "successes":successes,
-            "failures":failures,
-            }
+#     resultDict = {
+#             "totalDevices":totalDevices,
+#             "totalSent":totalSent,
+#             "successes":successes,
+#             "failures":failures,
+#             }
 
-    print(resultDict)
-    return resultDict
+#     print(resultDict)
+#     return resultDict

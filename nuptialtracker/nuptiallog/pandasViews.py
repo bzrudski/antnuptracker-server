@@ -18,6 +18,8 @@
 # 
 
 from rest_pandas import PandasView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import GenericAPIView
 from .models import Flight
 from .serializers import FlightSerializerExport
@@ -26,6 +28,8 @@ from django.utils import timezone
 class FlightDataExport(PandasView):
     queryset = Flight.objects.all()
     serializer_class = FlightSerializerExport
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication]
 
     def get_pandas_filename(self, request, format):
         date = timezone.now()
