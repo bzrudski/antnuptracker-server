@@ -5,10 +5,14 @@ html{
 }
 
 body{
-    background-color: #bfedff;
+    /* background-color: #bfedff; */
+    background-image: linear-gradient(to top, #c9e8ff, #45afff);
+    background-repeat: no-repeat;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    /* height: 100%; */
+    height: max-content;
+    background-attachment: fixed;
     margin: 0;
 }
 h1 {
@@ -56,6 +60,7 @@ a {
     text-align: center;
     padding: 20pt 15pt;
     cursor: pointer;
+    box-shadow: 5px 5px 3px #0b0b0b;
 }
 
 .button:hover{
@@ -120,9 +125,9 @@ a.menubutton:hover{
 
 .textbody{
     text-align: left;
-    margin: 2%;
-    padding: 2%;
-    line-height: 200%;
+    margin: 0% 2% 2%;
+    padding: 0% 2%;
+    /* line-height: 200%; */
 }
 
 .textbody p {
@@ -390,7 +395,7 @@ a.nextprevbutton:hover {
 
 #formbody{
     display: flex;
-    padding: 2%;
+    /* padding: 2%; */
     text-align: left;
     margin: 2%;
     font-size: large;
@@ -420,7 +425,8 @@ a.nextprevbutton:hover {
     margin-left: auto;
     margin-right: auto;
     width: 70%;
-    border: 2px #000000 solid;
+    /* border: 2px #000000 solid; */
+    box-shadow: 5px 5px 3px #0b0b0b;
 }
 
 #appicon{
@@ -457,21 +463,40 @@ a.nextprevbutton:hover {
     margin-right: auto;
 }
 
-#downloadAppStore {
-    margin: 12px;
-}
-
-#appStoreHolder {
+#appDownloadButtonHolder {
+    vertical-align: middle;
+    text-align: center;
     display: inline-block;
 }
 
-#bigAppStoreDownload{
-    margin: 18px;
+.downloadApp {
+    margin: 12px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
-#appStoreContainer {
-    justify-content: center;
+.appStoreHolder {
+    display: inline-block;
+    align-items: center;
+}
+
+.bigAppStoreDownload{
+    margin: 18px;
+    vertical-align: middle;
+}
+
+#bigAppDownloadContainer{
     display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.appStoreContainer {
+    justify-content: center;
+    justify-items: center;
+    justify-self: center;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 @media only screen and (max-width: 700px){

@@ -7,12 +7,23 @@
 <head>
     <title>{% block title%}Title -- AntNupTracker{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // Based on answer by Ashis Kumar at https://stackoverflow.com/questions/18032220/how-to-change-source-of-img-tag-on-hover
+        function hoverAntIcon(element){
+            element.setAttribute("src", "{% static 'nuptiallog/images/cartoon_ant_black.png' %}");
+        }
+
+        function unhoverAntIcon(element){
+            element.setAttribute("src", "{% static 'nuptiallog/images/cartoon_ant_brown.png' %}");
+        }
+    </script>
     {% block scripts %}{% endblock scripts%}
 </head>
 <body>
     {% block toolbar %}
     {% if not mobile %}
     <div id="toolbar">
+        <a href="{% url 'home' %}"><img src="{% static 'nuptiallog/images/cartoon_ant_brown.png' %}" height="54px" style="vertical-align: middle" alt="AntNupTracker ant mascot" onmouseenter="hoverAntIcon(this)" onmouseleave="unhoverAntIcon(this)"></a>
         <a id="home" href="{% url 'home' %}" class="menubutton">AntNupTracker</a>
         <a id="about" href="{% url 'about' %}" class="menubutton">About</a>
         {% if not update_development %}
@@ -37,18 +48,24 @@
     {% block content %}
 
     <h1>Page Title</h1>
-    
+
     {% endblock %}
 
     {% block footer %}
     <div class="footer">
-        <div class="appiconholder">
+        <img src="{% static 'nuptiallog/images/ants_together.png' %}" alt="Cartoon ants" height="100px" style="display:block; margin-left: auto;margin-right: auto;">
+        <!-- <div class="appiconholder">
             <img id="appicon" src="{% static 'nuptiallog/images/appicon.png' %}" width="160">
-        </div>
+        </div> -->
         <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />All flight data is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br>
-        <a id="appStoreHolder" href="https://apps.apple.com/us/app/id1493362260">
-            <img id="downloadAppStore" src="{% static 'nuptiallog/images/proprietary/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg' %}" alt="Download on App Store" height="45px">
+        <div id="appDownloadButtonHolder">
+        <a class="appStoreHolder" href="https://apps.apple.com/us/app/id1493362260">
+            <img class="downloadApp" src="{% static 'nuptiallog/images/proprietary/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg' %}" alt="Download on App Store" height="45px">
         </a>
+        <a class="appStoreHolder" href='https://play.google.com/store/apps/details?id=com.bzrudski.ant_nup_tracker&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+            <img class="downloadApp" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height="70px"/>
+        </a>
+        </div>
         <br>
         For questions, feel free to contact us at <a href="mailto:nuptialtracker@gmail.com">nuptialtracker@gmail.com</a>.
         <br>
@@ -72,7 +89,7 @@
         </div>
         <br><br>
         <div class="trademarks">
-            App Store is a trademark of Apple Inc., registered in the U.S. and other countries. Facebook is a trademark of Facebook, Inc. The GitHub logo is a trademark of GitHub, Inc.
+            App Store is a trademark of Apple Inc., registered in the U.S. and other countries. Facebook is a trademark of Facebook, Inc. The GitHub logo is a trademark of GitHub, Inc. Google Play and the Google Play logo are trademarks of Google LLC.
         </div>
     </div>
     {% endblock %}
