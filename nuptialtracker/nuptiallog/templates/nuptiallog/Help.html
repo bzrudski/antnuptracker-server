@@ -5,32 +5,42 @@
 {%block content%}
     <h1>Help and Support</h1>
     <div class="textbody">
+        <h2>App Features</h2>
+        Our app has a number of features:
+        <ul>
+            <li><b>Report ant nuptial flights:</b> Using the form in the app, users can easily record nuptial flights. Simply enter the genus and species, select the date, time and location of the flight, and optionally upload images.</li>
+            <li><b>Browse nuptial flight records:</b> See flights that other users have reported and comment to help with species identification. Sort the list based on distance and filter based on taxonomy, date of flight, presence of images, and more.</li>
+            <li><b>Get notified:</b> Customise your notification settings to know when flights are happening for your favourite genera and species.</li>
+        </ul>
         <h2>Users and Roles</h2>
-        A user account is <b>not</b> required to use AntNupTracker. However, to report ant nuptial flights and leave comments on flight records, a user account is needed.
-        <br>
-        There are two types of AntNupTracker users:
+        A user account is <b>required</b> to use AntNupTracker. However, it is easy and free to <a href="{% url 'create-account' %}">create an account</a>. There are two types of AntNupTracker users:
         <ul>
             <li><b>Citizen Scientist</b>: This option is for users who are ant enthusiasts, but do not have formal training in the study of ants and do not work in a field directly related to ants.</li>
             <li><b>Professional Myrmecologist</b>: This option is for users who have a degree related to myrmecology, the study of ants, or who work in a field directly related to ants. 
-                These users are identified in AntNupTracker by the ant icon. In addition to the features that Citizen Scientists can perform, 
-                Professional Myrmecologists can mark flight records as "Validated" by pressing on the ant icon in the top bar of the flight detail screen. 
-                Validated flights and flights that have been recorded by Professional Myrmecologists have a green ant icon beside them in the flight list.</li>
+                These users are identified in AntNupTracker by the ant icon. In addition to the features that Citizen Scientists can access, 
+                Professional Myrmecologists can mark flight records as "Verified" by pressing on the checkmark icon in the top bar of the flight detail screen. 
+                Verified flights and flights that have been recorded by Professional Myrmecologists have a green checkmark beside them in the flight list.</li>
         </ul>
         <div class="helpImagesContainer">
-            <div class="helpImageContainer"><img class="helpContainedImage" src="{% static 'nuptiallog/images/antBlue.svg' %}"><br>This icon is used to denote <b>Professional Myrmecologists</b>. A green version also appears beside flights that have been validated or that were uploaded by a Professional Myrmecologist.</div>
-            <div class="helpImageContainer"><img class="helpContainedImage" src="{% static 'nuptiallog/images/professionalCell.png' %}"><br>This row contains a flight record reported by a <b>Professional Myrmecologist</b>. Note the two ant icons: the blue one beside the username indicates that the user who reported the flight is a <b>Professional Myrmecologist</b> while the green one indicates that the flight is validated.</div>
-            <div class="helpImageContainer"><img class="helpContainedImage" src="{% static 'nuptiallog/images/detailHeader.png' %}">
+            <div class="helpImageContainer"><img class="helpContainedImage" src="{% static 'nuptiallog/images/antgreen.svg' %}" height="70px"><br>This icon is used to denote <b>Professional Myrmecologists</b>. A green version also appears beside flights that have been verified or that were uploaded by a Professional Myrmecologist.</div>
+            <div class="helpImageContainer"><img class="helpContainedImage" src="{% static 'nuptiallog/images/flight_list.png' %}" height="200px"><br>
+                Two flight rows. The top row contains a flight record reported by a <b>Professional Myrmecologist</b>. The green checkmark indicates that the flight is <i>verified</i>, while the green ant icon indicates that the user who reported the flight is a <b>Professional Myrmecologist</b>. The second flight was recorded by a user who is an <b>Enthusiast</b>. Once a <b>Professional Myrmecologist</b> marks it as verified, the green checkmark will appear in the left margin.
+            </div>
+            <div class="helpImageContainer"><img class="helpContainedImage" src="{% static 'nuptiallog/images/list_header.png' %}" height="60px"><br>
+                This top bar appears above the list. The info button presents information about the app. The filter button allows users to narrow down the flight list shown in the app. The user icon allows the user to access notification settings and useful links.
+            </div>
+            <div class="helpImageContainer"><img class="helpContainedImage" src="{% static 'nuptiallog/images/flight_header.png' %}" height="60px">
                 <br>
                 This is the header displayed on the flight detail screen.
                 <ul style="text-align: left;">
-                    <li>Whenever a user is logged in, the <i>Comment</i> <img src="{% static 'nuptiallog/images/commentIcon.svg' %}"> button is active, as any user can write comments on any flight.</li>
-                    <li>If the user is logged in as a <b>Professional Myrmecologist</b>, the <i>Validate</i> <img src="{% static 'nuptiallog/images/validateIcon.svg' %}"> button is active if the flight is not already validated.</li>
-                    <li>If the user is the one who reported the flight record, the <i>Edit</i> button is active.</li>
+                    <li>The <i>Comment</i> button allows users to write comments for any flight.</li>
+                    <li>If the user is a <b>Professional Myrmecologist</b>, the <i>Verifiy</i> button (checkmark) appears. If the flight is not yet verified, the user can mark this flight as verified. A <b>Professional Myrmecologist</b> may also un-verify a flight.</li>
+                    <li>If the user is the one who reported the flight record, the <i>Edit</i> button (pencil) appears on the screen.</li>
                 </ul>
             </div>
         </div>
 
-        <b>Note: All flights uploaded by Professional Myrmecologists are implicitly considered validated.</b>
+        <b>Note: All flights uploaded by Professional Myrmecologists are implicitly considered verified.</b>
 
         <!-- <h3>Frequently Asked Questions</h3>
         <div class="questionList">
