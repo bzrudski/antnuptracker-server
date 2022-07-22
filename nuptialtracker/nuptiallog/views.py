@@ -1311,8 +1311,8 @@ def scientificAdvisoryBoard(request, update_development=False):
     return render(request, 'nuptiallog/ScientificAdvisoryBoard.html', {"scientists": scientists, "update_development": update_development})
 
 def helpView(request, update_development=False):
-    questions = getFaqs()
-    return render(request, 'nuptiallog/Help.html', {"questions":questions, "update_development": update_development})
+    # questions = getFaqs()
+    return render(request, 'nuptiallog/Help.html', {"update_development": update_development})
 
 def applicense(request):
     # path = sys.path("AntNupTrackerLicense.txt")
