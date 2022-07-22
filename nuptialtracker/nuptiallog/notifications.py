@@ -25,7 +25,7 @@ def send_notifications(devices, title, body):
 
     tokens = [token for token in devices]
 
-    print(tokens)
+    # print(tokens)
 
     message = messaging.MulticastMessage(
         tokens=tokens,

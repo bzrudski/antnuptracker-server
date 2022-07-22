@@ -202,7 +202,7 @@ class MyGenusList(mixins.ListModelMixin, generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        print(request.data)
+        # print(request.data)
         serializer = IdOnlyGenusSerializer(data=request.data, many=True)
 
         # print(serializer.data)
@@ -210,7 +210,7 @@ class MyGenusList(mixins.ListModelMixin, generics.GenericAPIView):
         # print("Preparing to update genus list")
 
         if (serializer.is_valid()):
-            print(serializer.validated_data)
+            # print(serializer.validated_data)
 
             # genera = serializer.validated_data["genera"]
 
@@ -364,7 +364,7 @@ class LoginView(KnoxLoginView):
         model = self.request.data.get("model")
         deviceToken = self.request.data.get("deviceToken", "")
 
-        print("Logged in with token: {}".format(deviceToken))
+        # print("Logged in with token: {}".format(deviceToken))
 
         user = self.request.user
         lastLoggedIn = timezone.now().replace(microsecond=0)
@@ -430,8 +430,8 @@ class LoginView(KnoxLoginView):
 
             except:
                 deviceID = Device.generate_new_id()
-                print("Create new.")
-                print(f"Device ID is now {deviceID}")
+                # print("Create new.")
+                # print(f"Device ID is now {deviceID}")
                 device = Device.objects.create(
                     deviceID=deviceID,
                     model=model,
@@ -443,7 +443,7 @@ class LoginView(KnoxLoginView):
                 )
                 device.save()
 
-                print("The device token is {}".format(device.deviceToken))
+                # print("The device token is {}".format(device.deviceToken))
 
                 return device.deviceID
 
@@ -462,11 +462,11 @@ class VerifyTokenView(APIView):
     def post(self, request, format=None):
         # auth = self.request.auth
         if (self.request.auth != None):
-            print("Authenticated request.")
+            # print("Authenticated request.")
             # user = self.request.user.flightuser
             # role = user.role.role
             # deviceID = self.request.META['HTTP_DEVICEID']
-            print("Got request {}".format(self.request.data))
+            # print("Got request {}".format(self.request.data))
             device_id = self.request.data.get("deviceID")
             device_token = self.request.data.get("deviceToken")
 
@@ -754,8 +754,8 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
             genera = [entry[0] for entry in taxonomy_list if len(entry) == 1]
             species_list = [Species.objects.get(genus__name=entry[0], name=entry[1]) for entry in taxonomy_list if len(entry) > 1]
 
-            print(genera)
-            print(species_list)
+            # print(genera)
+            # print(species_list)
 
             queryset = queryset.filter(Q(genus__name__in=genera) | Q(species__in=species_list))
             # queryset = queryset.filter(species__in=species_list)
@@ -823,8 +823,8 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
                 #     except ValueError:
                 #         pass
 
-                for f in queryset:
-                    print("Flight {}: Distance is {}".format(f.flightID, f.distance))
+                # for f in queryset:
+                #     print("Flight {}: Distance is {}".format(f.flightID, f.distance))
 
                 return queryset
 
@@ -866,8 +866,8 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     def create(self, request, format=None):
         serializer = FlightSerializerBarebones(data=self.request.data)
 
-        print("Serializer for new flight:")
-        print(serializer)
+        # print("Serializer for new flight:")
+        # print(serializer)
 
         user = self.request.user
         date = timezone.now().replace(microsecond=0)
@@ -875,8 +875,8 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         if not serializer.is_valid():
             return Response({"error":"Invalid formatting"}, status=status.HTTP_400_BAD_REQUEST)
 
-        print("Validated Data:")
-        print(serializer.validated_data)
+        # print("Validated Data:")
+        # print(serializer.validated_data)
 
         location = Point(x=serializer.validated_data["location"]['x'], y=serializer.validated_data["location"]['y'], srid=4326)
 
@@ -916,7 +916,7 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         events = []
         #hasChanged=False
 
-        print(serializer.validated_data)
+        # print(serializer.validated_data)
 
         species_id = serializer.validated_data["species"]["id"]
         new_species = Species.objects.get(pk=species_id)
@@ -961,8 +961,8 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         if (new_radius != flight.radius):
             events.append(f"Radius changed from {round(flight.radius, 1)} km to {round(new_radius, 1)} km.")
         if (new_date_of_flight != flight.dateOfFlight):
-            print("Old date: {}".format(flight.dateOfFlight))
-            print("New date: {}".format(new_date_of_flight))
+            # print("Old date: {}".format(flight.dateOfFlight))
+            # print("New date: {}".format(new_date_of_flight))
             old_date_string = flight.dateOfFlight.strftime("%I:%M %p %Z on %d %b %Y")
             new_date_string = new_date_of_flight.strftime("%I:%M %p %Z on %d %b %Y")
             events.append(f"Date of flight changed from {old_date_string} to {new_date_string}.")
@@ -1009,20 +1009,20 @@ class FlightViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         send_notifications(devices=devices, title=title, body=body)
 
     def update(self, request, pk=None, format=None):
-        print("Making serializer")
+        # print("Making serializer")
         serializer = FlightSerializer(data=self.request.data)
-        print("Made serializer")
+        # print("Made serializer")
 
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
         self.generate_changelog(serializer)
 
-        print("Saving serializer")
+        # print("Saving serializer")
         flight = self.get_object()
         instance = serializer.update(flight, serializer.validated_data)
         # instance = serializer.save()
-        print("Saved serializer")
+        # print("Saved serializer")
 
         notificationThread = Thread(target=self.notify_users_update, args=[])
         notificationThread.start()

@@ -233,8 +233,8 @@ def logout_device(sender, instance, **kwargs):
             device.active = False
             device.save()
         except Exception as error:
-            print("Logout error:")
-            print(error)
+            # print("Logout error:")
+            # print(error)
             # print(error)
             return
 

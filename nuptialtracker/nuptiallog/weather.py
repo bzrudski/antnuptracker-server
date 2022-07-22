@@ -276,13 +276,13 @@ def get_weather_for_flight(flight):
     # print(weatherData)
 
     if old:
-        print("Retrieved historical weather for flight {}.".format(flight.flightID))
-        print(weather_data)
-        print("The current time is {} and the time of flight is {}".format(current_time, date_of_flight))
+        # print("Retrieved historical weather for flight {}.".format(flight.flightID))
+        # print(weather_data)
+        # print("The current time is {} and the time of flight is {}".format(current_time, date_of_flight))
         weather = parse_historical_weather(weather_data, current_time, flight)
     else:
-        print("Retrieved current weather for flight {}.".format(flight.flightID))
-        print(weather_data)
+        # print("Retrieved current weather for flight {}.".format(flight.flightID))
+        # print(weather_data)
         weather = parse_current_weather(weather_data, current_time, flight)
 
     # print(weather)

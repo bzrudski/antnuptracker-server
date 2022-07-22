@@ -143,9 +143,9 @@ class IsFlightOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        print("Checking flight permission...")
+        # print("Checking flight permission...")
         has_permission = Flight.objects.get(pk=self.flight_id).owner == request.user
-        print("User has permission: " + str(has_permission))
+        # print("User has permission: " + str(has_permission))
         return has_permission
 
     def has_object_permission(self, request, view, obj):
@@ -155,9 +155,9 @@ class IsFlightOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        print("Checking flight permission...")
+        # print("Checking flight permission...")
         has_permission = Flight.objects.get(pk=self.flight_id).owner == request.user
-        print("User has permission: " + str(has_permission))
+        # print("User has permission: " + str(has_permission))
         return has_permission
 
 
@@ -173,5 +173,5 @@ class IsImageOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        print("Checking image permissions...")
+        # print("Checking image permissions...")
         return obj.created_by == request.user

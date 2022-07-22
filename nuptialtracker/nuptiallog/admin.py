@@ -110,7 +110,8 @@ class UserAdmin(BaseUserAdmin):
             try:
                 email.send()
             except:
-                print("Error sending account email")
+                # print("Error sending account email")
+                pass
 
     actions = [flag_user, unflag_user, email_professional_user]
 
