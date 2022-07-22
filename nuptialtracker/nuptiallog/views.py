@@ -41,7 +41,7 @@ from .serializers import *
 from .permissions import *
 from .weather import get_weather_for_flight
 from .notifications import send_notifications
-from .faq import getFaqs
+# from .faq import getFaqs
 from .parsers import ImageUploadParser
 from .exceptions import BadLocationUrlException
 

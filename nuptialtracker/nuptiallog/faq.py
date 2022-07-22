@@ -17,12 +17,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
-import json
-import os
+# import json
+# import os
 
-def getFaqs():
-    faqPath = os.getenv("FAQPATH")
-    f = open(faqPath)
-    questions = json.load(f)
-    f.close()
-    return questions
+# def getFaqs():
+#     faqPath = os.getenv("FAQPATH")
+#     f = open(faqPath)
+#     questions = json.load(f)
+#     f.close()
+#     return questions
