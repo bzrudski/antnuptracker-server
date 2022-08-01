@@ -544,14 +544,14 @@ class CreateUserForm(generic.FormView):
             to_email = form.cleaned_data.get('email')
             email = EmailMessage(subject, message, to=[to_email])
             email.content_subtype = 'html'
-            # print("Preparing to send e-mail.")
+            # print("Preparing to send email.")
             try:
                 email.send()
 
-                # print("Sent e-mail")
+                # print("Sent email")
                 return render(request, 'nuptiallog/EmailSent.html', {'user':user}, status=status.HTTP_201_CREATED)
             except:
-                # print("Error sending e-mail.")
+                # print("Error sending email.")
                 return render(request, self.email_failed, {'user':user}, status=400)
         else:
             return render(request, self.form_template, {'form':form})
@@ -585,12 +585,12 @@ class ResetPasswordForm(generic.FormView):
                 })
                 email = EmailMessage(subject, message, to=[to_email])
                 email.content_subtype = 'html'
-                # print("Preparing to send e-mail.")
+                # print("Preparing to send email.")
                 email.send()
             except:
                 user = None
             finally:
-                # print("Sent e-mail")
+                # print("Sent email")
                 return render(request, self.email_successful, {'email':to_email, 'mobile': self.mobile}, status=status.HTTP_201_CREATED)
         else:
             return render(request, self.form_template, {'form':form, 'mobile': self.mobile})
@@ -656,13 +656,26 @@ class UserDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = FlightUserSerializer
     lookup_field = "user__username"
     lookup_url_kwarg = "username"
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsUserOrAuthenticatedReadOnly]
+    authentication_classes = [TokenAuthentication]
 
     def get_queryset(self):
-        return FlightUser.objects.all().filter(user__username=self.kwargs["username"])
+        return FlightUser.objects.all()
 
-    def get(self,request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        serializer = FlightUserSerializer(data=self.request.data)
+        
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        flightuser = self.get_object()
+        # flightuser = self.request.user.flightuser
+        instance = serializer.update(flightuser, serializer.validated_data)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class FlightListNested(APIView):
     serializer_class = FlightSerializerFull
@@ -1284,6 +1297,17 @@ class TaxonomyVersionView(APIView):
     def get(self, request, *args, **kwargs):
         taxonomy = Taxonomy.objects.last()
         serializer = TaxonomyVersionSerializer(taxonomy)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class FullTaxonomyView(APIView):
+    """
+    API view that returns all genera and species.
+    """
+
+    def get(self, request, *args, **kwargs):
+        taxonomy = Taxonomy.objects.last()
+        genera = taxonomy.genera
+        serializer = FullTaxonomySerializer(genera, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 def welcome(request, update_development=False):

@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 from .models import FlightUser, Role
 
 class UserCreationForm(BaseUserForm):
-    email = forms.EmailField(max_length=128, help_text="Enter a valid e-mail address. We need this to verify your account.")
+    email = forms.EmailField(max_length=128, help_text="Enter a valid email address. We need this to verify your account.")
     
     ROLE_CHOICES = [
         ("myrmecologist", "Professional Myrmecologist"),

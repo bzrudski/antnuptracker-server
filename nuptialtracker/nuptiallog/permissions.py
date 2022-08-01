@@ -58,8 +58,8 @@ class IsOwnerOrProfessionalOrReadOnly(permissions.BasePermission):
         else:
             if obj.owner == request.user:
                 return True
-            else:
-                return request.user.flightuser.professional
+            
+            return request.user.flightuser.professional
 
 class IsProfessional(permissions.BasePermission):
     """
@@ -175,3 +175,19 @@ class IsImageOwnerOrReadOnly(permissions.BasePermission):
 
         # print("Checking image permissions...")
         return obj.created_by == request.user
+
+class IsUserOrAuthenticatedReadOnly(permissions.BasePermission):
+    """
+    Defines an object permission for user objects to ensure that a user can
+    only modify their own details (and not those of others).
+    """
+    def has_object_permission(self, request, view, obj):
+        print("Checking object permissions...")
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        if request.user == obj.user:
+            print("Request use is the user in question...")
+            return True
+
+        return False

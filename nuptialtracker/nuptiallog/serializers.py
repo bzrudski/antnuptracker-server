@@ -36,7 +36,7 @@ class SpeciesSerializer(serializers.ModelSerializer):
     genus = GenusSerializer()
     class Meta:
         model = Species
-        fields = ['genus','name']
+        fields = ['genus', 'name']
 
 
 class GenusNameIdSerializer(serializers.ModelSerializer):
@@ -59,6 +59,18 @@ class NewGenusSerializer(serializers.ModelSerializer):
         model = Genus
         fields = ['id', 'name', 'species']
 
+class SpeciesNameIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Species
+        fields = ['id', 'name']
+
+class FullTaxonomySerializer(serializers.ModelSerializer):
+    # species = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    species = SpeciesNameIdSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Genus
+        fields = ['id', 'name', 'species']
 
 class IdOnlySpeciesSerializer(serializers.Serializer):
     # class Meta:
@@ -259,10 +271,13 @@ class FlightValidationSerializer(serializers.Serializer):
 
 class FlightUserSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source="user.username")
+    professional = serializers.ReadOnlyField()
+    flagged = serializers.ReadOnlyField()
 
     class Meta:
         model = FlightUser
         fields = ('username', 'professional', 'description', 'institution', 'flagged')
+
 
 class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, password):

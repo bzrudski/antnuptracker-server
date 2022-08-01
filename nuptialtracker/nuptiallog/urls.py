@@ -61,6 +61,7 @@ urlpatterns = [
     path('api/my-genera/', views.MyGenusList.as_view()),
     # path('api/genera/', views.GenusListView.as_view()),
     # path('api/genera/<str:genus>/', views.SpeciesDetailView.as_view()),
+    path('api/taxonomy/', views.FullTaxonomyView.as_view()),
     path('api/latest-taxonomy/', views.TaxonomyView.as_view()),
     path('api/media/flight_pics/<str:filename>', views.ImageView.as_view()),
     # path('api/users/', views.UserListView.as_view()),
