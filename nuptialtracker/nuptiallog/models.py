@@ -183,6 +183,9 @@ class FlightUser(models.Model):
         else:
             return 0
 
+    def __str__(self) -> str:
+        return f"FlightUser for {self.user.username}"
+
 def create_flightUser(sender, instance, created, **kwargs):
     if (created):
         FlightUser.objects.create(user=instance)

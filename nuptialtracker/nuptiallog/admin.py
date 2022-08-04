@@ -17,16 +17,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
+from typing import Sequence, Type
 from django.contrib import admin
-from .models import Flight, Comment, Device, Changelog, FlightUser, ScientificAdvisor
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
-
-from knox.models import AuthToken
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from knox.admin import AuthTokenAdmin as BaseAuthTokenAdmin
+from knox.models import AuthToken
+
+from .models import (Changelog, Comment, Device, Flight, FlightImage, FlightUser,
+                     ScientificAdvisor)
+
 
 # Register your models here.
 class CommentInline(admin.StackedInline):
@@ -34,21 +37,34 @@ class CommentInline(admin.StackedInline):
     can_delete = True
     extra = 0
 
+class FlightImageInline(admin.StackedInline):
+    model = FlightImage
+    extra = 0
+    can_delete: bool = False
+    readonly_fields: Sequence[str] = ['created_by', 'date_created', 'image']
+
+class FlightHistoryInline(admin.StackedInline):
+    model = Changelog
+    extra: int = 0
+    can_delete: bool = False
+    readonly_fields: Sequence[str] = ['event', 'user', 'date']
+
 class FlightLogAdmin(admin.ModelAdmin):
     fieldsets = [
         ("Classification",      {'fields': ['genus', 'species', 'confidence']}),
-        ("Flight information",  {'fields': ['latitude','longitude', 'radius','dateOfFlight', 'size']}),
+        ("Flight information",  {'fields': ['latitude', 'longitude', 'radius', 'dateOfFlight', 'size']}),
         ("Contact",             {'fields': ['owner', 'dateRecorded']}),
-        ("Image",               {'fields': ['image']}),
+        # ("Image",               {'fields': ['images']}),
         ("Validation",          {'fields': ['validatedBy', 'validatedAt']})
     ]
     
-    inlines = (CommentInline, )
-    list_display=('flightID','genus','species','latitude','longitude','dateOfFlight')
+    inlines = (CommentInline, FlightImageInline, FlightHistoryInline)
+    list_display=('flightID', 'genus', 'species', 'latitude', 'longitude', 'dateOfFlight')
     list_filter = ['dateOfFlight', 'dateRecorded']
-    search_fields = ['latitude','longitude']
+    search_fields = ['latitude', 'longitude']
     #ordering = ['genus','species','location']
     ordering = ['flightID']
+    readonly_fields: Sequence[str] = ['genus', 'species']
 
 admin.site.register(Flight, FlightLogAdmin)
 
@@ -80,7 +96,7 @@ class UserAdmin(BaseUserAdmin):
     get_role.short_description = 'role'
     get_institution.short_description = 'institution'
     list_display = ('username', 'email', 'get_institution', 'is_active', 'get_role')
-    inlines = [FlightUserInline, FlightDeviceInline]
+    inlines = [FlightUserInline]
 
     def flag_user(self, request, queryset):
         for user in queryset:
