@@ -17,6 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
+import smtplib
 from typing import Sequence, Type
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -95,7 +96,7 @@ class UserAdmin(BaseUserAdmin):
 
     get_role.short_description = 'role'
     get_institution.short_description = 'institution'
-    list_display = ('username', 'email', 'get_institution', 'is_active', 'get_role')
+    list_display = ('username', 'email', 'get_institution', 'is_active', 'get_role', 'date_joined')
     inlines = [FlightUserInline]
 
     def flag_user(self, request, queryset):
@@ -125,9 +126,8 @@ class UserAdmin(BaseUserAdmin):
 
             try:
                 email.send()
-            except:
-                # print("Error sending account email")
-                pass
+            except smtplib.SMTPException:
+                print("Error sending account status email")
 
     actions = [flag_user, unflag_user, email_professional_user]
 
