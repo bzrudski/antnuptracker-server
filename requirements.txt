@@ -32,4 +32,4 @@ six==1.14.0
 sqlparse==0.3.1
 uritemplate==3.0.1
 urllib3==1.26.5
-Pillow==9.0.1
+Pillow==9.3.0
