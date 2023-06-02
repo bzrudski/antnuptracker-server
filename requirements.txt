@@ -2,7 +2,7 @@ cachetools==4.1.0
 certifi==2022.12.7
 cffi==1.14.0
 chardet==3.0.4
-cryptography==39.0.1
+cryptography==41.0.0
 Django==3.2.19
 django-extra-fields==2.0.5
 django-filter==2.4.0
