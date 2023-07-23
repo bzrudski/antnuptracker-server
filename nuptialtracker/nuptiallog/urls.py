@@ -17,8 +17,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
-from django.urls import path, include
-from django.conf.urls import url
+from django.urls import path, include, re_path
+# from django.conf.urls import re_path
 from rest_framework.urlpatterns import format_suffix_patterns
 # from rest_framework.routers import DefaultRouter
 from rest_framework_nested import routers
@@ -105,8 +105,8 @@ species_router.register(r'species', views.SpeciesViewSet, basename='species')
 
 urlpatterns = format_suffix_patterns(urlpatterns)
 
-urlpatterns += [url(r'^api/', include(flights_router.urls))]
-urlpatterns += [url(r'^api/', include(comments_router.urls))]
-urlpatterns += [url(r'^api/', include(images_router.urls))]
-urlpatterns += [url(r'^api/', include(genera_router.urls))]
-urlpatterns += [url(r'^api/', include(species_router.urls))]
+urlpatterns += [re_path(r'^api/', include(flights_router.urls))]
+urlpatterns += [re_path(r'^api/', include(comments_router.urls))]
+urlpatterns += [re_path(r'^api/', include(images_router.urls))]
+urlpatterns += [re_path(r'^api/', include(genera_router.urls))]
+urlpatterns += [re_path(r'^api/', include(species_router.urls))]
