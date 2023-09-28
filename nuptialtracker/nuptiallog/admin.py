@@ -99,7 +99,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'get_institution', 'is_active', 'get_role', 'date_joined')
     inlines = [FlightUserInline]
     ordering = ['-date_joined']
-    list_filter = ['get_role']
+    list_filter = ['flightuser__professional']
 
     def flag_user(self, request, queryset):
         for user in queryset:
