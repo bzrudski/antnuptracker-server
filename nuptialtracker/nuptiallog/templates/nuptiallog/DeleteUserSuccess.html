@@ -1,0 +1,11 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{%block title%}Delete Account -- AntNupTracker{% endblock title%}
+{% block content %}
+    <h1>AntNupTracker Account Deleted</h1>
+    <div class="textbody">
+        <p>Your account <b>{{user.username}}</b> for AntNupTracker has been
+            deleted.
+        </p>
+    </div>
+{% endblock content%}

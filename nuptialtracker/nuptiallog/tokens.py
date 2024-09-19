@@ -28,3 +28,4 @@ class AccountTokenGenerator(PasswordResetTokenGenerator):
 
 accountActivationToken = AccountTokenGenerator()
 passwordResetToken = PasswordResetTokenGenerator()
+deleteAccountToken = PasswordResetTokenGenerator()

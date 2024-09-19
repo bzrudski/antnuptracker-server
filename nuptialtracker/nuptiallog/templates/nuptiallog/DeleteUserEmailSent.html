@@ -1,0 +1,12 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %}Delete Account -- AntNupTracker {% endblock title %}
+{% block content %}
+    <h1>Delete AntNupTracker Account</h1>
+    <div class="textbody">
+        <p>We just sent an email to <a href="mailto:{{email}}">{{ email }}</a> if this is associated
+            with your account. Click on the link to delete your <b>AntNupTracker</b> account.</p>
+
+        <p>If you didn't get an email, please make sure that you entered the right address for your account.</p>
+    </div>
+{% endblock content %}
