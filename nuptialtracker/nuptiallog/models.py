@@ -17,6 +17,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # 
 
+import os
+
 # from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
@@ -112,6 +114,14 @@ class FlightImage(models.Model):
     created_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     date_created = models.DateTimeField()
 
+def delete_flight_images(sender, instance, **kwargs):
+    if instance.images:
+        for image in instance.images.all():
+            filename = image.image.path
+            os.remove(filename)
+
+signals.pre_delete.connect(delete_flight_images, sender=Flight, weak=False, dispatch_uid='models.delete_flight_images')
+
 class Comment(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     text = models.TextField()
@@ -119,8 +129,8 @@ class Comment(models.Model):
     responseTo = models.ForeignKey('Flight', on_delete=models.CASCADE, related_name="comments")
 
 class Changelog(models.Model):
-    user = models.ForeignKey('auth.User', related_name='changes', on_delete=models.PROTECT)
-    flight = models.ForeignKey('Flight', related_name='changes', on_delete=models.PROTECT)
+    user = models.ForeignKey('auth.User', related_name='changes', on_delete=models.CASCADE)
+    flight = models.ForeignKey('Flight', related_name='changes', on_delete=models.CASCADE)
     event = models.TextField()
     date = models.DateTimeField()
 

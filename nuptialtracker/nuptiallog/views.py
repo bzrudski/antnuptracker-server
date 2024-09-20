@@ -745,7 +745,7 @@ class DeleteUserFormView(generic.FormView):
                         "user": user,
                         "domain": current_site.domain,
                         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                        "token": tokens.passwordResetToken.make_token(user),
+                        "token": tokens.deleteAccountToken.make_token(user),
                     },
                 )
                 email = EmailMessage(subject, message, to=[to_email])
@@ -802,11 +802,16 @@ class ConfirmDeleteUserView(generic.FormView):
     def post(self, request, uidb64, token):
         user = self.getUser(uidb64)
 
-        if user is not None and tokens.passwordResetToken.check_token(user, token):
+        print(f"Got user: {user}")
+
+        if user is not None and tokens.deleteAccountToken.check_token(user, token):
             form = forms.DeleteUserConfirmationForm(request.POST)
             if form.is_valid():
+                # print("Deletion form is valid!")
                 uid = force_str(urlsafe_base64_decode(uidb64))
                 user = User.objects.get(pk=uid)
+
+                # print(f"Got user {user} to delete!")
                 # print(user)
 
                 if not form.cleaned_data["accept_deletion"]:
@@ -816,14 +821,18 @@ class ConfirmDeleteUserView(generic.FormView):
                         {"form": form, "user": user},
                     )
 
-                user.flightuser.flights.delete()
+                # print("Preparing to delete flights.")
+                user.flights.all().delete()
+                # print("Preparing to delete flight user.")
                 user.flightuser.delete()
+                # print("Preparing to delete user.")
                 user.delete()
 
                 return render(
                     request, "nuptiallog/DeleteUserSuccess.html", {"user": user}
                 )
             else:
+                print(form.errors)
                 return render(
                     request,
                     "nuptiallog/DeleteUserConfirm.html",

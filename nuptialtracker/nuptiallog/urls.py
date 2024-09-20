@@ -69,9 +69,11 @@ urlpatterns = [
     # path('api/comments/', views.CommentList.as_view()),
     # Non-api views, frontend for website
     path('create-account/', views.CreateUserForm.as_view(), name="create-account", kwargs={"update_development":DEVELOPMENT_MODE}),
+    path('delete-account/', views.DeleteUserFormView.as_view(), name="delete-account", kwargs={"update_development":DEVELOPMENT_MODE}),
     path('reset-password/', views.ResetPasswordForm.as_view(), name="reset-password", kwargs={"update_development":DEVELOPMENT_MODE}),
     path('activate/<str:uidb64>/<str:token>/', views.UserActivationView.as_view(), name="activate"),
     path('passchange/<str:uidb64>/<str:token>/', views.ChangePasswordForm.as_view(), name="changepass"),
+    path('delete-account/<str:uidb64>/<str:token>/', views.ConfirmDeleteUserView.as_view(), name="deluser"),
     path('community-standards/', views.communityStandards, name="community_standards", kwargs={"update_development":DEVELOPMENT_MODE}),
     path('about/', views.about, name="about", kwargs={"update_development":DEVELOPMENT_MODE}),
     # path('scientific-advisory-board/', views.scientificAdvisoryBoard, name="scientificAdvisoryBoard"),
