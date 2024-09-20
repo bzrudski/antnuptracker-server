@@ -33,8 +33,8 @@ class UserCreationForm(BaseUserForm):
     )
 
     ROLE_CHOICES = [
-        ("myrmecologist", "Professional Myrmecologist"),
         ("enthusiast", "Citizen Scientist"),
+        ("myrmecologist", "Professional Myrmecologist"),
     ]
 
     professional = forms.ChoiceField(
