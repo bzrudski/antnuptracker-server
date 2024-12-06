@@ -33,7 +33,7 @@ google-resumable-media==2.5.0
 googleapis-common-protos==1.59.1
 grpcio==1.56.2
 grpcio-status==1.56.0
-httpie==3.2.2
+httpie==3.2.4
 httplib2==0.22.0
 idna==3.7
 ipython==8.14.0
