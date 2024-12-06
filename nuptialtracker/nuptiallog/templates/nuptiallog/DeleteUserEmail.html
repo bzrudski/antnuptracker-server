@@ -1,0 +1,13 @@
+{% autoescape on %}
+Hello <span style="text-decoration-line: underline">{{ user.username }}</span>,<br>
+Please click the link below to delete your <i><b>AntNupTracker</b></i> account.
+If you did not submit this request, you can ignore this email.
+<br>
+https://{{domain}}{% url 'deluser' uidb64=uid token=token %}
+<br>
+<br>
+We're sorry to see you go.
+<br>
+<br>
+The Abouheif Lab
+{% endautoescape %}

@@ -469,6 +469,14 @@ a.nextprevbutton:hover {
     display: inline-block;
 }
 
+#delete-button {
+    font-size: larger;
+    background-color: red;
+    color: white;
+    font-weight: bolder;
+    padding: 5%;
+}
+
 .downloadApp {
     margin: 12px;
     display: inline-block;

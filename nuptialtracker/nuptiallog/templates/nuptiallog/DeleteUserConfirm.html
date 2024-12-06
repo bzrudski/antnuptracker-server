@@ -1,0 +1,27 @@
+{% extends "nuptiallog/template.html" %}
+{% load static %}
+{% block title %} Delete Account -- AntNupTracker{% endblock title%}
+
+{% block content %}
+<h1>Delete AntNupTracker Account {{ user.username }}</h1>
+<p>Please confirm that you want to delete your AntNupTracker account.</p>
+<div id="formbody">
+<form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        {{ field.label_tag }}
+            {{ field }}
+
+            {% if field.help_text %}
+                <small style="display: none">{{field.help_text}}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <p style="color:red">{{ error }}</p>
+                {% endfor %}
+        <br><br>
+        {% endfor %}
+
+    <button type="submit" id="delete-button">Delete Account</button>
+</form>
+</div>
+{% endblock content %}
