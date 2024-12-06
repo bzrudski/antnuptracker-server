@@ -81,7 +81,7 @@ urlpatterns = [
     path('help/', views.helpView, name="help", kwargs={"update_development":DEVELOPMENT_MODE}),
     path('privacy-policy/', views.privacy, name="privacy", kwargs={"update_development":DEVELOPMENT_MODE}),
     path('terms-and-conditions/', views.terms, name="terms", kwargs={"update_development":DEVELOPMENT_MODE}),
-    path('taxonomy/', views.taxonomy, name="taxonomy", kwargs={"update_development":DEVELOPMENT_MODE}),
+    path('taxonomy/', views.taxonomy, name="taxonomy"),
     # path('browse/', views.browse, {"start": 0, "offset": 15, "update_development": update_development}, name="browse"),
     # path('browse?start=<int:start>&offset=<int:offset>', views.browse, name="browse_params", kwargs={"update_development":update_development}),
     path('app-license/', views.applicense, name="applicense"),

@@ -99,6 +99,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'get_institution', 'is_active', 'get_role', 'date_joined')
     inlines = [FlightUserInline]
     ordering = ['-date_joined']
+    list_filter = ['flightuser__professional']
 
     def flag_user(self, request, queryset):
         for user in queryset:
@@ -107,6 +108,12 @@ class UserAdmin(BaseUserAdmin):
     def unflag_user(self, request, queryset):
         for user in queryset:
             user.flightuser.unflag()
+
+    def mark_user_as_citizen_scientist(self, request, queryset):
+        for user in queryset:
+            user.flightuser.professional = False
+            user.flightuser.save()
+
 
     def email_professional_user(self, request, queryset):
         site = get_current_site(request).domain
@@ -129,8 +136,12 @@ class UserAdmin(BaseUserAdmin):
                 email.send()
             except smtplib.SMTPException:
                 print("Error sending account status email")
+            finally:
+                # Switch account to citizen scientist
+                user.flightuser.professional = False
+                user.flightuser.save()
 
-    actions = [flag_user, unflag_user, email_professional_user]
+    actions = [flag_user, unflag_user, email_professional_user, mark_user_as_citizen_scientist]
 
 
 admin.site.unregister(User)
