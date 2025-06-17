@@ -54,7 +54,7 @@ Pillow==10.3.0
 platformdirs==3.9.1
 prompt-toolkit==3.0.39
 proto-plus==1.22.3
-protobuf==4.23.4
+protobuf==4.25.8
 psycopg2==2.9.6
 ptyprocess==0.7.0
 pure-eval==0.2.2
