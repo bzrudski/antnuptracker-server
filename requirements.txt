@@ -50,7 +50,7 @@ pandas==2.0.3
 parso==0.8.3
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==10.3.0
+Pillow==12.1.1
 platformdirs==3.9.1
 prompt-toolkit==3.0.39
 proto-plus==1.22.3
